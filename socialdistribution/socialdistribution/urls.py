@@ -23,4 +23,6 @@ urlpatterns = [
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
+    path('accounts/', include('django_registration.backends.one_step.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ]

@@ -55,7 +55,7 @@ class Comment(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     comment = models.TextField()
     published = models.DateTimeField('date published',auto_now_add=True)
-    published.editable=True
+    #published.editable=True
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
