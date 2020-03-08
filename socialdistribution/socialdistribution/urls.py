@@ -29,12 +29,9 @@ urlpatterns = [
     path('new_post/', include('profiles.urls')),
     path('posts/', include('posts.urls')),
     path('editprofile/', profiles_views.edit_profile, name='editprofile'),
-<<<<<<< HEAD
     path('viewprofile/', profiles_views.view_profile, name='viewprofile'),
-=======
     path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
->>>>>>> fc56d80c4c46dec03b7674375d7d8b2a88c00ee2
 ]
 
 if settings.DEBUG:
