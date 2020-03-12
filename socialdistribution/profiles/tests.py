@@ -31,3 +31,4 @@ class Profiles_Test(TestCase):
         # User = get_user_model()
         # print(User.objects.get(email = "to@to.com"))
         # print("AFTER")
+        user = User.objects.create_user('to@to.com', 'wrongaccount')
