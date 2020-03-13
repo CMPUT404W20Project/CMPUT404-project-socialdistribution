@@ -208,8 +208,8 @@ class Profiles_Test(TestCase):
     def test_invalid_post(self):
         modified_post = self.example_post
         modified_post.id = uuid.uuid1()
-        comment_made = Comment.objects.create(author = self.user, post = modified_post, comment = "hi")
-        
+        comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+
         try:
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except Exception as e:
@@ -220,7 +220,36 @@ class Profiles_Test(TestCase):
             self.assertTrue(error_message in str(dict_of_error['post']))        
 
     def test_comment_delete_user(self):
-        print("Implement me")
+        # print("Implement me")
+        example_user = self.user
+        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
+        post_id = post_made.id
+
+        # Add post to the table.
+        post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        post_from_table = Post.objects.get(id = post_made.id)
+        self.assertTrue(post_from_table == post_made)
+
+        # Delete user, and then see if the post is still in the table
+        example_user.delete()
+        self.assertFalse(post_id in Post.objects.all())        
 
     def test_comment_delete_post(self):
         print("Implement me")
+
+
+
+    # Delete user from a post (Check cascade on delete)
+    def test_post_delete_user(self):
+        example_user = self.user
+        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
+        post_id = post_made.id
+
+        # Add post to the table.
+        post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        post_from_table = Post.objects.get(id = post_made.id)
+        self.assertTrue(post_from_table == post_made)
+
+        # Delete user, and then see if the post is still in the table
+        example_user.delete()
+        self.assertFalse(post_id in Post.objects.all())
