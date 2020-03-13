@@ -235,21 +235,25 @@ class Profiles_Test(TestCase):
         self.assertFalse(post_id in Post.objects.all())        
 
     def test_comment_delete_post(self):
-        print("Implement me")
+        test_post = self.example_post
 
+        # Create comment and post, and check that comment exists.
+        comment_made = Comment.objects.create(author = self.user, post = test_post, comment = "hi")
+        comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        self.assertTrue(comment_made in Comment.objects.all())
 
+        #Check that comment is not in comments after parent post delete.
+        test_post.delete()
+        self.assertFalse(comment_made in Comment.objects.all())
 
-    # Delete user from a post (Check cascade on delete)
-    def test_post_delete_user(self):
-        example_user = self.user
-        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
-        post_id = post_made.id
+    def test_comment_delete_user(self):
+        test_user = self.user
 
-        # Add post to the table.
-        post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
-        post_from_table = Post.objects.get(id = post_made.id)
-        self.assertTrue(post_from_table == post_made)
+        # Create comment and post, and check that comment exists.
+        comment_made = Comment.objects.create(author = test_user, post = self.example_post, comment = "hi")
+        comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        self.assertTrue(comment_made in Comment.objects.all())
 
-        # Delete user, and then see if the post is still in the table
-        example_user.delete()
-        self.assertFalse(post_id in Post.objects.all())
+        #Check that comment is not in comments after parent post delete.
+        test_user.delete()
+        self.assertFalse(comment_made in Comment.objects.all())
