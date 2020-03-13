@@ -144,11 +144,21 @@ class Profiles_Test(TestCase):
             self.assertTrue(len(dict_of_error) == 1)
             self.assertTrue(error_message in str(dict_of_error['author']))   
 
+    # Delete user from a post (Check cascade on delete)
     def test_post_delete_user(self):
-        print("Implement me")  
+        example_user = self.user
+        post_made = Post.objects.create(title = "derp", published = timezone.now(), author = example_user, visibileTo = "Public")
+        post_id = post_made.id
 
-    def test_post_non_user(self):
-        print("Implement me") 
+        # Add post to the table.
+        post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        post_from_table = Post.objects.get(id = post_made.id)
+        self.assertTrue(post_from_table == post_made)
+
+        # Delete user, and then see if the post is still in the table
+        example_user.delete()
+        self.assertFalse(post_id in Post.objects.all())
+        
 
     # Try to create comment
     def test_comment_creation(self):
