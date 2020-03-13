@@ -142,7 +142,8 @@ class Profiles_Test(TestCase):
             dict_of_error = json.loads(error_string)
             error_message = 'does not exist'
             self.assertTrue(len(dict_of_error) == 1)
-            self.assertTrue(error_message in str(dict_of_error['author']))   
+            self.assertTrue(error_message in str(dict_of_error['author']))  
+            post_made.delete() 
 
     # Delete user from a post (Check cascade on delete)
     def test_post_delete_user(self):
@@ -195,7 +196,6 @@ class Profiles_Test(TestCase):
         modified_user = self.user
         modified_user.id = uuid.uuid1()
         comment_made = Comment.objects.create(author = modified_user, post = self.example_post, comment = "hi")
-        comment_from_table = Comment.objects.get(id = comment_made.id)
         try:
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except Exception as e:
@@ -204,6 +204,7 @@ class Profiles_Test(TestCase):
             error_message = 'does not exist'
             self.assertTrue(len(dict_of_error) == 1)
             self.assertTrue(error_message in str(dict_of_error['author']))
+            comment_made.delete()
 
     def test_invalid_post(self):
         modified_post = self.example_post
@@ -217,7 +218,8 @@ class Profiles_Test(TestCase):
             dict_of_error = json.loads(error_string)
             error_message = 'does not exist'
             self.assertTrue(len(dict_of_error) == 1)
-            self.assertTrue(error_message in str(dict_of_error['post']))        
+            self.assertTrue(error_message in str(dict_of_error['post'])) 
+            comment_made.delete()       
 
     def test_comment_delete_user(self):
         # print("Implement me")
