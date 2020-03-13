@@ -9,7 +9,7 @@ class Profiles_Test(TestCase):
         user = User.objects.create_superuser('to@to.com', 'wrongaccount')
 
 
-    def test_account_login(self):
+    def test_account_login_1(self):
         User = get_user_model()
         print("In test")
         client = Client()
@@ -26,9 +26,3 @@ class Profiles_Test(TestCase):
         self.assertTrue(logout_stream.status_code == 302)
         self.assertTrue("/accounts/login" in logout_stream.url)
 
-    def test_account_creation(self):
-        client = Client()
-        # User = get_user_model()
-        # print(User.objects.get(email = "to@to.com"))
-        # print("AFTER")
-        user = User.objects.create_user('to@to.com', 'wrongaccount')
