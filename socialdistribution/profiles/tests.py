@@ -11,9 +11,7 @@ class Profiles_Test(TestCase):
 
     def test_account_login_1(self):
         User = get_user_model()
-        print("In test")
         client = Client()
-        print("MAde user")
 
         # Logging in, and retreiving stream (can only do when logged in)
         login_action = client.login( email='to@to.com', password='wrongaccount')
