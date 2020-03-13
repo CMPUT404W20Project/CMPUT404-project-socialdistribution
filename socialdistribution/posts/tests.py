@@ -132,7 +132,17 @@ class Profiles_Test(TestCase):
             self.assertFalse(True)            
 
     def test_post_invalid_user(self):
-        print("FILL IN") 
+        modified_user = self.user
+        modified_user.id = uuid.uuid1()
+        post_made = Post.objects.create(title = "short", published = timezone.now(), author = modified_user, visibileTo = "Public")        
+        try:
+            post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except Exception as e:
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'does not exist'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['author']))   
 
     def test_post_delete_user(self):
         print("Implement me")  
@@ -158,10 +168,46 @@ class Profiles_Test(TestCase):
         self.assertTrue(comment_from_table == comment_made)
 
     def test_comment_invalid_type(self):
-        print("Implement me")
-    
+        try:
+            comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi", \
+            content_type = "invalid")
+            comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except ValidationError as e:
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'is not a valid choice'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['content_type']))
+        except:
+            self.assertFalse(True)
+
     def test_invalid_user(self):
-        print("Implement me")
+        modified_user = self.user
+        modified_user.id = uuid.uuid1()
+        comment_made = Comment.objects.create(author = modified_user, post = self.example_post, comment = "hi")
+        comment_from_table = Comment.objects.get(id = comment_made.id)
+        try:
+            comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except Exception as e:
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'does not exist'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['author']))
+
+    def test_invalid_post(self):
+        modified_post = self.example_post
+        modified_post.id = uuid.uuid1()
+        comment_made = Comment.objects.create(author = self.user, post = modified_post, comment = "hi")
+        
+        try:
+            comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except Exception as e:
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'does not exist'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['post']))        
 
     def test_comment_delete_user(self):
         print("Implement me")
