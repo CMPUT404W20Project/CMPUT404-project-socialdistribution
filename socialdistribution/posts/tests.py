@@ -16,12 +16,12 @@ class Profiles_Test(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create_superuser('to@to.com', 'wrongaccount')
+        self.example_post = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public")
+
     
     def fix_error_formating(self, x):
         x = x.replace("'", '"', 2)
         return(x)
-
-
 
     # Required fields for posts are :
     #   - Author object, date, title
@@ -84,7 +84,7 @@ class Profiles_Test(TestCase):
             self.assertFalse(True)
 
     # Test that the model rejects an invalid categories setting
-    def test_invalid_visibility(self):      
+    def test_invalid_categories(self):      
         try:
             self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
             categories = "invalid")
@@ -99,7 +99,72 @@ class Profiles_Test(TestCase):
         except:
             self.assertFalse(True)
 
+    # Test that the model rejects an invalid content setting
+    def test_invalid_content(self):      
+        try:
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            content_type = "invalid")
+            self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except ValidationError as e:
 
-        #  content_type, visibility
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'is not a valid choice'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['content_type']))
+        except:
+            self.assertFalse(True)
+
+    # Test that the model rejects an invalid content setting
+    def test_content_visibility(self):      
+        try:
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            visibility = "invalid")
+            self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except ValidationError as e:
+
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'is not a valid choice'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['visibility']))
+        except:
+            self.assertFalse(True)            
+
+    def test_post_invalid_user(self):
+        print("FILL IN") 
+
+    def test_post_delete_user(self):
+        print("Implement me")  
+
+    def test_post_non_user(self):
+        print("Implement me") 
+
+    # Try to create comment
+    def test_comment_creation(self):
+        try:
+            comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+            comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+            self.assertTrue(True)
+        except:
+            self.assertFalse(True)
+
+    # Make sure that post made is put in table.
+    def test_comment_retrieval(self):
+        comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+        comment_from_table = Comment.objects.get(id = comment_made.id)
+   
+        # Check that retrieved comment is the same as that submitted.
+        self.assertTrue(comment_from_table == comment_made)
+
+    def test_comment_invalid_type(self):
+        print("Implement me")
     
+    def test_invalid_user(self):
+        print("Implement me")
 
+    def test_comment_delete_user(self):
+        print("Implement me")
+
+    def test_comment_delete_post(self):
+        print("Implement me")
