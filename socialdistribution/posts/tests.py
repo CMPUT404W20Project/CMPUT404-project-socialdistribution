@@ -16,6 +16,12 @@ class Profiles_Test(TestCase):
     def setUp(self):
         User = get_user_model()
         self.user = User.objects.create_superuser('to@to.com', 'wrongaccount')
+    
+    def fix_error_formating(self, x):
+        x = x.replace("'", '"', 2)
+        return(x)
+
+
 
     # Required fields for posts are :
     #   - Author object, date, title
@@ -59,7 +65,41 @@ class Profiles_Test(TestCase):
         except:
             self.assertFalse(True)
 
+    # Test that the model rejects a long description
+    def test_descriptions_title_too_long(self):
+        long_description = ""
+        for i in range(202):
+            long_description += "e"
+        
+        try:
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            description = long_description)
+            self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except ValidationError as e:
+            dict_of_error = json.loads(str(e).replace("'",'''"'''))
+            error_message = 'Ensure this value has at most 200 characters'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['description']))
+        except:
+            self.assertFalse(True)
 
-        # title, descriptions, categories, content_type, visibility
+    # Test that the model rejects an invalid categories setting
+    def test_invalid_visibility(self):      
+        try:
+            self.post_made = Post.objects.create(title = "short", published = timezone.now(), author = self.user, visibileTo = "Public", \
+            categories = "invalid")
+            self.post_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
+        except ValidationError as e:
+
+            error_string = self.fix_error_formating(str(e))
+            dict_of_error = json.loads(error_string)
+            error_message = 'is not a valid choice'
+            self.assertTrue(len(dict_of_error) == 1)
+            self.assertTrue(error_message in str(dict_of_error['categories']))
+        except:
+            self.assertFalse(True)
+
+
+        #  content_type, visibility
     
 
