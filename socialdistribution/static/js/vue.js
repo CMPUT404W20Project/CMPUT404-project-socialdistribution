@@ -2,26 +2,40 @@
 var vm = new Vue({
     // HTML element
     el: "#vue-app",
-    // data is an object which can be accessed in the HTML attributes
-    data: function () {
+    data: function() {
         return {
-            posts_url: "/api/posts",
-            posts: []
+            posts: [],
+            currentAuthor: {},
+            mode: "posts"
         }
     },
     methods: {
-        reloadPosts: function () {
+        // Get posts visible to the currently authenticated user
+        getPosts: function() {
+            const url = "/api/author/posts";
             // get posts
-            fetch(this.posts_url)
+            fetch(url)
                 .then(response => response.json())
                 .then(json => {
                     this.posts = json["posts"];
                     console.log(this.posts);
                 });
+        },
+        // Get the currently authenticated user
+        getCurrentAuthor: function() {
+            const url = "/api/whoami";
+            // get posts
+            fetch(url)
+                .then(response => response.json())
+                .then(json => {
+                    this.currentAuthor = json["author"];
+                    console.log(this.currentAuthor);
+                });        
         }
     },
     // runs when the vue app is created
     created() {
-        this.reloadPosts();
+        this.getPosts();
+        this.getCurrentAuthor();
     }
 })

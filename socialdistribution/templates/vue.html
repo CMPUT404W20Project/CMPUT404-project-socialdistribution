@@ -1,36 +1,116 @@
-{% load static %} 
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>Vue Example</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        crossorigin="anonymous">
+
+    <link rel="stylesheet" href="{% static 'css/vue.css' %}">
 
     <!-- load JS -->
     <script defer type="text/javascript" src="{% static 'js/vue.js' %}"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
 </head>
-<body>
-    <!-- this means Django won't render this part -->
-    {% verbatim %}  
-    <div id="vue-app">
-        <h1>Posts</h1>
-        <!-- call API when button is clicked -->
-        <button v-on:click="reloadPosts()">Reload</button>
 
-        <!-- create one of these divs for each post in data.posts -->
-        <div v-for="post in posts">
-            <hr>
-            <div>
-                <!-- templating just like jinja2 -->
-                <h3>{{ post.title }}</h3>
-                <p>{{ post.content }}</p>
-                <p>{{ post.author.displayName }}</p>
+<body id="main">
+    <div id="vue-app">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Social Distribution</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:;" onclick="vm.mode = 'posts'">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:;" onclick="vm.mode = 'authors'">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="javascript:;" onclick="vm.mode = 'profile'">Profile</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Logout</a>
+                    </li>
+                </ul>
             </div>
-            <hr><br><br><br><br>
+        </nav>
+
+        <!--POSTS-->
+        <div class="container" id="posts" v-if="mode == 'posts'">
+            <!-- <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">All Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">My Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Friends Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Local Posts</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Remote Posts</a>
+                </li>
+            </ul> -->
+            <!-- this means Django won't render this part -->
+            {% verbatim %}
+            <!-- create one of these divs for each post in data.posts -->
+            <div v-for="post in posts">
+                <div class="card post-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ post.author.email }}</h6>
+                        <p class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" v-for="comment in post.comments">
+                            <div style="padding-left: 3em;">
+                                <h6 class="card-subtitle">{{ comment.author.email }}</h6>
+                                <p class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endverbatim %}
         </div>
+
+        <!--PROFILE-->
+        <div class="container" id="profile" v-if="mode == 'profile'">
+            <!-- this means Django won't render this part -->
+            {% verbatim %}
+            <!-- create one of these divs for each post in data.posts -->
+            {{ currentAuthor }}
+            {% endverbatim %}
+        </div>
+
+
+        <footer class="footer">
+            <div class="container">
+                <span class="text-muted"><i>
+                    </i>GitHub: <a href="https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution"
+                        target="blank"><i class="fab fa-github"></i></a>
+                </span>
+            </div>
+        </footer>
     </div>
-    {% endverbatim %}
 </body>
+
 </html>
