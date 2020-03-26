@@ -45,9 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'servers.apps.ServersConfig',
     # Third Party
     'markdownify',
-]
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -57,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'socialdistribution.urls'
@@ -116,7 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Edmonton'
 
 USE_I18N = True
 
@@ -136,6 +140,10 @@ STATICFILES_DIRS = [STATIC_DIR, ]
 MEDIA_URL = '/media/'
 
 LOGIN_REDIRECT_URL = '/stream'
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 
 #Set up Django Heroku for deployment.
 django_heroku.settings(locals()) 
