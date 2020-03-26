@@ -229,17 +229,22 @@ def insert_comment(post, comment_dict):
         comment_datetime = make_aware(
             dateutil.parser.isoparse(comment_dict["comment"]["published"])
         )
+        comment = Comment(
+            # id=comment_dict["comment"]["id"],
+            comment=comment_dict["comment"]["comment"],
+            published=comment_datetime,
+            post=post,
+            author=author,
+            contentType=comment_dict["comment"]["contentType"]
+        )
     else:
-        comment_datetime = datetime.utcnow()
-
-    comment = Comment(
-        # id=comment_dict["comment"]["id"],
-        comment=comment_dict["comment"]["comment"],
-        published=comment_datetime,
-        post=post,
-        author=author,
-        contentType=comment_dict["comment"]["contentType"]
-    )
+        comment = Comment(
+            # id=comment_dict["comment"]["id"],
+            comment=comment_dict["comment"]["comment"],
+            post=post,
+            author=author,
+            contentType=comment_dict["comment"]["contentType"]
+        )
 
     comment.save()
 

@@ -18,10 +18,10 @@
         <!-- load JS -->
         <script defer type="text/javascript" src="{% static 'js/vue.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js" integrity="sha256-xljKCznmrf+eJGt+Yxyo+Z3KHpxlppBZSjyDlutbOh0=" crossorigin="anonymous"></script>
     </head>
     
     <body id="main">
-        {% csrf_token %}
         <div id="vue-app">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="#">Social Distribution</a>
@@ -76,16 +76,18 @@
                 <div class="card post-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ post.title }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ nameForAuthor(post.author) }}</h6>
+                        <h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
                         <p class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
-                        <button type="button" v-on:click="alert('Implement this')" class="btn btn-primary">View</button>
+                        <button type="button" v-on:click="viewPost(post)" class="btn btn-primary">View</button>
                         <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button>
                         <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.id == currentAuthor.id">Delete</button>
                     </div>
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" v-for="comment in post.comments">
                             <div style="padding-left: 3em;">
-                                <h6 class="card-subtitle">{{ nameForAuthor(comment.author) }}</h6>
+                                <h6>{{ nameForAuthor(comment.author) }}</h6>
+                                <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
                                 <p class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
                             </div>
                         </li>
@@ -109,6 +111,14 @@
             {% endverbatim %}
         </div>
 
+        <!--VIEW POST-->
+        <div class="container" id="view-post" v-if="mode == 'viewpost'">
+            <!-- this means Django won't render this part -->
+            {% verbatim %}
+            <!-- create one of these divs for each post in data.posts -->
+            {{ focusPost }}
+            {% endverbatim %}
+        </div>
 
         <footer class="footer">
             <div class="container">

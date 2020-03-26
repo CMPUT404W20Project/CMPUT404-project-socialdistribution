@@ -1,5 +1,5 @@
 // From: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-async function postJson(url = '', data = {}, csrfToken) {
+async function postJson(url = '', data = {}) {
     // Default options are marked with *
     const response = await fetch(url, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -7,8 +7,7 @@ async function postJson(url = '', data = {}, csrfToken) {
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
         credentials: 'same-origin', // include, *same-origin, omit
         headers: {
-            'Content-Type': 'application/json',
-            "X-CSRFToken": csrfToken
+            'Content-Type': 'application/json'
             // 'Content-Type': 'application/x-www-form-urlencoded',
         },
         redirect: 'follow', // manual, *follow, error
@@ -27,7 +26,7 @@ var vm = new Vue({
             posts: [],
             currentAuthor: {},
             mode: "posts",
-            csrfToken: null
+            focusPost: null
         }
     },
     methods: {
@@ -69,6 +68,24 @@ var vm = new Vue({
                 return author.id;
             }
         },
+        // parse ISO8601 date and make it nice
+        prettyDate(date) {
+            try {
+                let dateObj = Date.parse(date);
+                return dateObj.toString();
+            }
+            catch(error) {
+                const regexp = /(.*)\..*(\+.*)/g;
+                try {
+                    let match = regexp.exec(date);
+                    let dateObj = Date.parse(`${match[1]}${match[2]}`);
+                    return dateObj.toString();
+                }
+                catch(error) {
+                    return date;
+                }
+            }
+        },
         deletePost(postId) {
             const url = `/api/posts/${postId}`;
 
@@ -77,16 +94,16 @@ var vm = new Vue({
                 mode: 'cors', // no-cors, *cors, same-origin
                 cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
                 credentials: 'same-origin', // include, *same-origin, omit
-                headers: {
-                    "X-CSRFToken": this.csrfToken
-                },
                 redirect: 'follow', // manual, *follow, error
                 referrerPolicy: 'no-referrer', // no-referrer, *client
             }).then((response) => {
                 console.log(response);
                 this.getPosts();
             });
-
+        },
+        viewPost(post) {
+            this.focusPost = post;
+            this.mode = "viewpost";
         },
         commentOnPost(postId) {
             const url = `/api/posts/${postId}/comments`;
@@ -107,7 +124,7 @@ var vm = new Vue({
                 }
             }
 
-            postJson(url, comment, this.csrfToken).then(
+            postJson(url, comment).then(
                 (json) => {
                     console.log(json);
                     this.getPosts();
@@ -116,7 +133,6 @@ var vm = new Vue({
     },
     // runs when the vue app is created
     created() {
-        this.csrfToken = document.querySelector("[name='csrfmiddlewaretoken']").value;
         this.getPosts();
         this.getCurrentAuthor();
     }
