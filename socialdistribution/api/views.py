@@ -26,7 +26,7 @@ from .utils import (
 import json
 
 
-@csrf_exempt
+@check_auth
 def posts(request):
     # get public posts
     if request.method == "GET":
