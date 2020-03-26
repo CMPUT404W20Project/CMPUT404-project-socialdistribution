@@ -44,6 +44,7 @@ urlpatterns = [
     path('404/', socialdistribution_views.error_404, name='error_404'),
     path('403/', socialdistribution_views.error_403, name='error_403'),
     path('500/', socialdistribution_views.error_500, name='error_500'),
+    path('vue-example/', socialdistribution_views.vue_example, name="vue example")
 
 ]
 

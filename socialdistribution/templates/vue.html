@@ -1,0 +1,36 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vue Example</title>
+
+    <!-- load JS -->
+    <script defer type="text/javascript" src="{% static 'js/vue.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+</head>
+<body>
+    <!-- this means Django won't render this part -->
+    {% verbatim %}  
+    <div id="vue-app">
+        <h1>Posts</h1>
+        <!-- call API when button is clicked -->
+        <button v-on:click="reloadPosts()">Reload</button>
+
+        <!-- create one of these divs for each post in data.posts -->
+        <div v-for="post in posts">
+            <hr>
+            <div>
+                <!-- templating just like jinja2 -->
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.content }}</p>
+                <p>{{ post.author.displayName }}</p>
+            </div>
+            <hr><br><br><br><br>
+        </div>
+    </div>
+    {% endverbatim %}
+</body>
+</html>

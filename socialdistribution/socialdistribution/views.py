@@ -29,3 +29,8 @@ def error_500(request):
     template ='500.html'
 
     return render(request,template,{})
+
+def vue_example(request):
+    template = 'vue.html'
+    
+    return render(request, template, {})

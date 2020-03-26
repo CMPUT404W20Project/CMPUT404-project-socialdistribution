@@ -10,9 +10,9 @@ from profiles.utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
 import base64
 from api.utils import author_can_see_post
 
+
 @login_required
 def index(request):
-
     author = request.user
     template = 'posts/posts_base.html'
     latest_post_list = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
