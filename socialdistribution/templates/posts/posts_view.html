@@ -39,7 +39,7 @@
             {% endif %}
             {% if post.categories %}
             {% for category in post.categories_as_list %}
-            <button id="button-categories" type="button" class="btn btn-info">{{ category }}</button>
+            <button id="button-categories" type="button" class="btn btn-info">#{{ category }}</button>
             {% endfor %}
             {% endif %}
         </div>
