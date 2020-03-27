@@ -37,7 +37,8 @@
           <span class="fa fa-camera">{{ form.image_file }} </span><br>
           <span style="margin-left: 1%;">{{ form.unlisted }} Unlisted</span>
           <span style="margin-left: 30%;">Conetent Type: {{ form.contentType }}</span><br>
-          <span class="fa fa-list-alt">  {{ form.categories }}</span>
+          <span class="fa fa-list-alt "> Categories:</span> <br>
+          <input type="text" data-role="tagsinput" class="form-control" name="categories"><br>
           <span style="margin-left: 33%; margin-right: 33%; display:inline-block;">  {{ form.published }}</span><br>
           <span class="fa fa-users" id="post-visibility" style="margin-left: -45%;" >  {{ form.visibility }}</span><br>
 
