@@ -26,7 +26,9 @@ var vm = new Vue({
             posts: [],
             currentAuthor: {},
             mode: "posts",
-            focusPost: null
+            focusPost: null,
+            focusAuthor: null,
+            converter: null        
         }
     },
     methods: {
@@ -38,7 +40,7 @@ var vm = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.posts = json["posts"];
-                    console.log(this.posts);
+                    // console.log(this.posts);
                 });
         },
         // Get the currently authenticated user
@@ -49,7 +51,7 @@ var vm = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.currentAuthor = json["author"];
-                    console.log(this.currentAuthor);
+                    // console.log(this.currentAuthor);
                 });
         },
         nameForAuthor: function (author) {
@@ -105,6 +107,10 @@ var vm = new Vue({
             this.focusPost = post;
             this.mode = "viewpost";
         },
+        viewAuthor(author) {
+            this.focusAuthor = author;
+            this.mode = "viewauthor";
+        },
         commentOnPost(postId) {
             const url = `/api/posts/${postId}/comments`;
 
@@ -126,13 +132,14 @@ var vm = new Vue({
 
             postJson(url, comment).then(
                 (json) => {
-                    console.log(json);
+                    // console.log(json);
                     this.getPosts();
                 });
         }
     },
     // runs when the vue app is created
     created() {
+        this.converter = new showdown.Converter(),
         this.getPosts();
         this.getCurrentAuthor();
     }

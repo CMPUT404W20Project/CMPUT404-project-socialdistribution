@@ -18,7 +18,7 @@
         <!-- load JS -->
         <script defer type="text/javascript" src="{% static 'js/vue.js' %}"></script>
         <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js" integrity="sha256-xljKCznmrf+eJGt+Yxyo+Z3KHpxlppBZSjyDlutbOh0=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>    
     </head>
     
     <body id="main">
@@ -76,9 +76,10 @@
                 <div class="card post-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ post.title }}</h5>
-                        <h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6>
+                        <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
                         <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
-                        <p class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                        <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                        <span v-else-if="post.contentType === 'text/markdown'" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
                         <button type="button" v-on:click="viewPost(post)" class="btn btn-primary">View</button>
                         <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button>
                         <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.id == currentAuthor.id">Delete</button>
@@ -86,7 +87,7 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item" v-for="comment in post.comments">
                             <div style="padding-left: 3em;">
-                                <h6>{{ nameForAuthor(comment.author) }}</h6>
+                                <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
                                 <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
                                 <p class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
                             </div>
@@ -120,14 +121,23 @@
             {% endverbatim %}
         </div>
 
-        <footer class="footer">
+        <!--VIEW AUTHOR-->
+        <div class="container" id="view-author" v-if="mode == 'viewauthor'">
+            <!-- this means Django won't render this part -->
+            {% verbatim %}
+            <!-- create one of these divs for each post in data.posts -->
+            {{ focusAuthor }}
+            {% endverbatim %}
+        </div>
+
+        <!-- <footer class="footer">
             <div class="container">
                 <span class="text-muted"><i>
                     </i>GitHub: <a href="https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution"
                         target="blank"><i class="fab fa-github"></i></a>
                 </span>
             </div>
-        </footer>
+        </footer> -->
     </div>
 </body>
 
