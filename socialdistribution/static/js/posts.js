@@ -9,9 +9,11 @@ function setImageSize() {
 
 // template/posts/post_form.html
 $(document).ready(function() {
-    
+  if ($("#id_contentType").val() == 'text/plain') {
     $(".fa-camera").hide();
     $("#id_image_file").hide();
+  }
+
     $('#id_contentType').on('change', function() {
         if (this.value == 'image/png;base64' || this.value == 'image/jpeg;base64') {
         $("#id_content").attr("required", false)
@@ -51,7 +53,7 @@ $(document).ready(function() {
 
     /**
      * Handle VisibleTo depend on the selection of visibility
-     * 
+     *
      * VisibleTo Selection only shows when the post is not a public
      * post
      */
@@ -71,7 +73,7 @@ $(document).ready(function() {
                 error: function(request,msg,error) {
                     console.log('fail to get lists of friend');
                 }
-            });  
+            });
 
             $(".open-visibileTo-button").click(function(){
                 var visible_to_list = new Array;
