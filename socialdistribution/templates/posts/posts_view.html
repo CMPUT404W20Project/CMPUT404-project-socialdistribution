@@ -19,7 +19,9 @@
             </div>
             <div class="buttons-wrap">
               <button class="btn btn-danger" id="delete-post"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+              {% if author == post.author %}
               <a class="btn btn-primary" href="/stream/{{ post.id }}/edit"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+              {% endif %}
             </div>
         </div>
         <!--end of the post heading-->
