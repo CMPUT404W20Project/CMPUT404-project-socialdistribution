@@ -10,7 +10,7 @@
     </div>
     <!-- end profile-header-img -->
     <!-- begin profile-header-info -->
-    <div class="profile-header-info" id="{{ author.id }}">
+    <div class="profile-header-info" id="{{ author.id }}" name="{{ author.host }}">
        <div class="author-displayName" id="{{ author.displayName }}"></div>
        <h4 class="m-t-10 m-b-5 name">{{ author.firstName }} {{ author.lastName }}</h4>
        <p class="m-b-10">{{ author.bio }}</p>
@@ -18,7 +18,7 @@
        {% if not status %}
        <a href="/viewprofile/">View Profile</a>
        {% else %}
-        <div class="user_author_id" id="{{ user_author.id }}"></div>
+        <div class="user_author_id" id="{{ user_author.id }}" name="{{ user_author.host }}"></div>
         <div class="user_author_name" id="{{ user_author.displayName }}"></div>
         <a class="btn send-request btn-primary" id="{{ author.id }}" >Add Friend</a>
        {% endif %}

@@ -20,6 +20,7 @@ def index(request):
     template = 'posts/posts_base.html'
     local_posts = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
     author_posts = Post.objects.filter(author=author).order_by('-published')
+    friend_posts = Post.objects.filter(visibility='FRIENDS', unlisted=False).order_by('-published')
     posts = [post.serialize() for post in (local_posts | author_posts)]
     remote_posts = get_public_posts_from_remote_servers()
 
