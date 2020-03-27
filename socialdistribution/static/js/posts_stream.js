@@ -75,6 +75,17 @@ $(document).ready(function() {
 
     /**
      * Handle the filter for the post
+     * 
+     * Show all: Show all the posts.
+     * Local: Show the local posts.
+     * Remote: Show the remote posts.
+     * My Posts: Show the posts that are belong to the author itself,
+     *           and the posts included all visibility type.
+     * Public: Show all the posts that are public.
+     * Friend: Show all the posts from the frends of the author, and
+     *         the post can be PRIVATE(but visible to this author), PUBLIC,
+     *         FRIENDS, FOAF.
+     * Github: Show the github stream. //TODO: Need treat the github activity as a post.
      */
     $("#all").addClass(" active");
     $("#all").focus();
@@ -95,19 +106,43 @@ $(document).ready(function() {
             console.log("remote");
         }else if (type === "my_post"){
             console.log("my post");
+
             var authorId = $(".profile-header-info").attr("id");
             $('div[id^="non-github-post"]').show();
 
-            $("#non-github-post").each(function(){
-                var postAuthorId = $(".post-author").attr("id");
-                console.log(postAuthorId);
+            $('div[id^="non-github-post"]').each(function(){
+                var postAuthorId = $(this).find(".post-author").attr("id");
                 if (postAuthorId !== authorId){
                     $(this).hide();
                 }
             });
 
+        }else if (type === "public"){
+            $('div[id^="non-github-post"]').show();
+
+            $('div[id^="non-github-post"]').each(function(){
+                var postVsibility = $(this).attr("name");
+                if (postVsibility !== "PUBLIC"){
+                    $(this).hide();
+                }
+            });
+
         }else if (type === "friend"){
+            //TODO: Currently get the post which is not belong to the author
+            // We need set up constraints that the posts are only belong to
+            // the friends of the author.
             console.log("friend");
+
+            var authorId = $(".profile-header-info").attr("id");
+            $('div[id^="non-github-post"]').show();
+
+            $('div[id^="non-github-post"]').each(function(){
+                var postAuthorId = $(this).find(".post-author").attr("id");
+                if (postAuthorId === authorId){
+                    $(this).hide();
+                }
+            });
+
         }else if (type === "github"){
             // console.log("github");
 

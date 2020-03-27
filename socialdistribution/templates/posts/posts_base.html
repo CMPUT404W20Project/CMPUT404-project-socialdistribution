@@ -6,11 +6,12 @@
 {% block posts %}
 <!-- https://www.w3schools.com/howto/howto_js_filter_elements.asp -->
 <!-- Control buttons -->
-<div id="myBtnContainer">
+<div id="myBtnContainer" style="margin-top: 2pt;">
     <button class="btn" id="all"> Show all</button>
     <button class="btn" id="local"> Local</button>
     <button class="btn" id="remote"> Remote</button>
     <button class="btn" id="my_post"> My Posts</button>
+    <button class="btn" id="public"> Public</button>
     <button class="btn" id="friend"> Friend</button>
     <button class="btn" id="github"> Github</button>
 </div>
@@ -18,7 +19,7 @@
 <ul id="my-stream">
 {% if latest_post_list %}
     {% for post in latest_post_list %}
-    <div class="post-card" id="non-github-post">
+    <div class="post-card" id="non-github-post" name="{{ post.visibility }}">
         <!--start of the post heading-->
         <div class="post-heading">
             <div class="post-author" id="{{ post.author.id }}">
@@ -49,6 +50,17 @@
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
+            {% if post.visibility == "PUBLIC" %}
+            <span class="label label-default" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "PRIVATE" %}
+            <span class="label label-success" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FRIENDS" %}
+            <span class="label label-info" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FOAF" %}
+            <span class="label label-primary" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "SERVERONLY" %}
+            <span class="label label-warning" style="float:left;">{{ post.visibility }}</span>
+            {% endif %}
             <ul>
                 <li><div class="post-detail-link">
                     <button type="button" class="btn btn-default btn-sm" >
