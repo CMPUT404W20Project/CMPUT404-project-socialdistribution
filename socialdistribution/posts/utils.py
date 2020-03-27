@@ -5,7 +5,7 @@ from requests.exceptions import Timeout
 from servers.models import Server
 
 
-PUBLIC_POSTS_ENDPOINT = "posts/"
+PUBLIC_POSTS_ENDPOINT = "posts"
 CONNECTION_TIMEOUT_LIMIT = 10
 READ_TIMEOUT_LIMIT = 20
 
