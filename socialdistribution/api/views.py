@@ -606,7 +606,7 @@ def post_comments(request, post_id):
     return JsonResponse(response_body, status=405)
 
 
-@csrf_exempt
+@check_auth
 def author_friends(request, author_uuid):
     # this view only accepts GET, and POSTS,
     # 405 Method Not Allowed for other methods
