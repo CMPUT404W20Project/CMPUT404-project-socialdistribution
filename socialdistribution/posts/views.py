@@ -85,7 +85,7 @@ def edit_post(request, post_id):
         'form': form,
         'author': author,
     }
-
+    
     if request.method == 'POST':
         if form.is_valid():
             new_content = form.save(commit=False)
@@ -93,7 +93,7 @@ def edit_post(request, post_id):
             if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
                 img = form.cleaned_data['image_file']
                 new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
-            print(new_content)
+
             new_content.save()
             url = reverse('details', kwargs={'post_id': post.id})
             return HttpResponseRedirect(url)

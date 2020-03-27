@@ -12,7 +12,12 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                    <img src="/media/temp.jpg"  alt="">
+                  <img src="/media/temp.jpg"  alt="">
+                  <!-- {% if author.profile_img != None %}
+                  <img src="/media/{{ author.profile_img }}"  alt="">
+                  {% else %}
+                  <img src="/media/temp.jpg"  alt="">
+                  {% endif %} -->
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author.displayName }}</p>
@@ -25,13 +30,16 @@
         <div class="post-item">
             <h5 class="post-card-title">{{ post.title }}</h5>
             {% if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" %}
-            <img class = "imagePost" src="data:{{ post.contentType }},{{ post.content }}" />
-            {% else %}
-            {% if post.contentType == "text/markdown" %}
+            <img class = "imagePost" src="data:{{ post.contentType }},{{ post.content }}" /> <br>
+            {% elif post.contentType == "text/markdown" %}
             <p class="post-card-text">{{ post.content|markdownify }}</p>
             {% else %}
             <p class="post-card-text">{{ post.content }}</p>
             {% endif %}
+            {% if post.categories %}
+            {% for category in post.categories %}
+            <button id="button-categories" type="button" class="btn btn-info">{{ category }}</button>
+            {% endfor %}
             {% endif %}
         </div>
 
