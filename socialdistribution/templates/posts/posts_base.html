@@ -12,12 +12,12 @@
         <div class="post-heading">
             <div class="post-author">
                 <div class="post-author-img">
-                  <img src="/media/temp.jpg"  alt="">
-                  <!-- {% if author.profile_img != None %}
-                  <img src="/media/{{ author.profile_img }}"  alt="">
+                  <!-- <img src="/media/temp.png"  alt=""> -->
+                  {% if post.author.profile_img != None %}
+                  <img src="/media/{{ post.author.profile_img }}"  alt="">
                   {% else %}
-                  <img src="/media/temp.jpg"  alt="">
-                  {% endif %} -->
+                  <img src="/media/temp.png"  alt="">
+                  {% endif %}
                 </div>
                 <div class="post-author-body">
                     <p class="post-author-name">{{ post.author.displayName }}</p>
