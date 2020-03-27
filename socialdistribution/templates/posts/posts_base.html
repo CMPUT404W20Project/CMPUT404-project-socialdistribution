@@ -4,13 +4,24 @@
 {% load tz %}
 
 {% block posts %}
+<!-- https://www.w3schools.com/howto/howto_js_filter_elements.asp -->
+<!-- Control buttons -->
+<div id="myBtnContainer">
+    <button class="btn" id="all"> Show all</button>
+    <button class="btn" id="local"> Local</button>
+    <button class="btn" id="remote"> Remote</button>
+    <button class="btn" id="my_post"> My Posts</button>
+    <button class="btn" id="friend"> Friend</button>
+    <button class="btn" id="github"> Github</button>
+</div>
+
 <ul id="my-stream">
 {% if latest_post_list %}
     {% for post in latest_post_list %}
-    <div class="post-card">
+    <div class="post-card" id="non-github-post">
         <!--start of the post heading-->
         <div class="post-heading">
-            <div class="post-author">
+            <div class="post-author" id="{{ post.author.id }}">
                 <div class="post-author-img">
                     <img src="/media/temp.jpg"  alt="">
                 </div>

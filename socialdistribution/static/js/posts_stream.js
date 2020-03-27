@@ -4,7 +4,7 @@
  * Append all Githb events at the bottom of all posts in the /stream
  * 
  */
-var markup = '<div class="post-card">\
+var markup = '<div class="post-card" id="github-post">\
 <!--start of the post heading-->\
 <div class="post-heading">\
     <div class="post-author">\
@@ -61,8 +61,8 @@ $(document).ready(function() {
             method: 'GET',
             success: function(events) {
                 for (event of events) {
-                    console.log(event);
-                    console.log(event.created_at);
+                    // console.log(event);
+                    // console.log(event.created_at);
                     // console.log($(template_author).ready());
                     $.tmpl( "githubTemplate", event ).appendTo("#my-stream" );
                 };
@@ -72,4 +72,46 @@ $(document).ready(function() {
             }
         });  
     }); 
+
+    /**
+     * Handle the filter for the post
+     */
+    $("#all").addClass(" active");
+    $("#all").focus();
+    $(".btn").click(function(){
+        $(".btn.active").removeClass(" active");
+        $(this).addClass(" active");
+
+        var type = $(this).attr("id");
+
+        if (type === "all"){
+            // console.log("all post");
+
+            $('div[id^="non-github-post"]').show();
+
+        }else if (type === "local"){
+            console.log("local");
+        }else if (type === "remote"){
+            console.log("remote");
+        }else if (type === "my_post"){
+            console.log("my post");
+            var authorId = $(".profile-header-info").attr("id");
+            $('div[id^="non-github-post"]').show();
+
+            $("#non-github-post").each(function(){
+                var postAuthorId = $(".post-author").attr("id");
+                console.log(postAuthorId);
+                if (postAuthorId !== authorId){
+                    $(this).hide();
+                }
+            });
+
+        }else if (type === "friend"){
+            console.log("friend");
+        }else if (type === "github"){
+            // console.log("github");
+
+            $('div[id^="non-github-post"]').hide();
+        }
+    })
 });
