@@ -126,6 +126,7 @@ $(document).ready(function() {
                     $(this).hide();
                 }
             });
+            $('div[id^="github-post"]').hide();
 
         }else if (type === "friend"){
             //TODO: Currently get the post which is not belong to the author
@@ -142,10 +143,11 @@ $(document).ready(function() {
                     $(this).hide();
                 }
             });
+            $('div[id^="github-post"]').hide();
 
         }else if (type === "github"){
             // console.log("github");
-
+            $('div[id^="github-post"]').show();
             $('div[id^="non-github-post"]').hide();
         }
     })
