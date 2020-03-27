@@ -2,6 +2,12 @@
     margin: 1em 0;
 }
 
+.post-image {
+    max-width: 50%;
+    max-height: 100%;
+    padding-bottom: 1em;
+}
+
 /* Sticky footer styles
 -------------------------------------------------- */
 html {
