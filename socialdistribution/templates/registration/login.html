@@ -17,13 +17,14 @@
                 <div class="log-content">
                     <h1>LOGIN </h1>
                     <div class="log-body">
-                        {{ user.username}}
-                        {{account.username}}
-                        {{author.username}}
+                        {{ user.username }}
+                        {{ account.username }}
+                        {{ author.username }}
 
                         <form method = "post" >
                             {% csrf_token %}
-                            {{ form.as_p }}
+                            <span>Email:</span><br>{{ form.username }}<br><br>
+                            <span>Password:</span><br>{{ form.password }}<br><br>
 
                             {% if form.errors %}
                             <p>Your username and password didn't match. Please try again.</p>
@@ -57,7 +58,7 @@
                     <p>Creat an account<a href="register"> Sign Up</a>
                     </p>
                     <br>
-                    <div class="txt1 text-center p-t-54 p-b-20">
+                    <!-- <div class="txt1 text-center p-t-54 p-b-20">
                         <span>
                         Or Sign Up Using
                         </span>
@@ -74,7 +75,7 @@
                             <i class="fa fa-google"></i>
                             </a>
                         </ul>
-                    </div>
+                    </div> -->
                     </div>
                     </div>
                 </div>

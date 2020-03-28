@@ -74,7 +74,11 @@
       </div>
       <!--end of the profile-->
       <!--start posts section-->
-      <div class="">
+      <div>
+        {% block friends %}
+        {% endblock friends %}
+      </div>
+      <div class="post-field">
         {% block new_post %}
         {% endblock new_post %}
 
@@ -92,9 +96,6 @@
 
         {% block post_detail %}
         {% endblock post_detail %}
-
-        {% block friends %}
-        {% endblock friends %}
 
       </div>
       <!--end posts section-->

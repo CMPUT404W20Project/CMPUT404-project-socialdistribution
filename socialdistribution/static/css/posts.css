@@ -1,12 +1,16 @@
 .post-card {
-  background-color: #ececec;
-  margin: 10pt;
+  background-color: white;
+  margin-bottom: 20pt;
+  margin-left: 20pt;
+  margin-right: 20pt;
+  /* border: solid 1px lightgrey; */
+  box-shadow:0px 0px 10px rgba(199, 198, 198, 0.966);
 }
 
 .post-heading {
   padding: 16px;
   margin: 0;
-  background-color: white;
+  /* background-color: white; */
   width: 100% !important;
   height: 80pt !important;
 }
@@ -43,15 +47,16 @@
 
 .post-item {
   text-align: left;
-  padding-left: 18pt;
+  padding: 18pt;
+  border-bottom: solid 1px lightgrey;
+  border-top: solid 1px lightgrey;
 }
 
 .post-base {
-  background-color: white;
+  /* background-color: white; */
   width: 100% !important;
   height: 60pt !important;
   padding: 8pt;
-  border-bottom: solid 1px lightgrey;
 }
 
 .post-base ul li {
@@ -81,4 +86,17 @@
   width: 65pt;
   display: flex;
   flex-direction: column;
+}
+
+#myBtnContainer {
+    padding-bottom: 10pt;
+    padding-top: 10pt;
+}
+
+.panel {
+    box-shadow:0px 0px 10px rgba(199, 198, 198, 0.966);
+}
+
+.post-back {
+    background-color: white;
 }

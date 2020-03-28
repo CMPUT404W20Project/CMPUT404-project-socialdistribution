@@ -12,15 +12,15 @@ var markup = '<div class="post-card" id="github-post">\
             <img src="${event.actor.avatar_url}"  alt="">\
         </div>\
         <div class="post-author-body">\
-            <p class="post-author-name">GitHub Activity - ${event.actor.display_login}</p>\
-            <p class="post-timestampe">${event.created_at}</p>\
+            <p class="post-author-name">${event.type}</p>\
+            <p >${event.actor.display_login}</p>\
+            <p class="post-timestamp" data-date="${event.created_at}">${event.created_at}</p>\
         </div>\
     </div>\
 </div>\
 <!--end of the post heading-->\
 <!--start of the post item-->\
 <div class="post-item">\
-    <h5 class="post-card-title">${event.type} on</h5>\
     <a class="post-card-text" href="https://github.com/${event.repo.name}">${event.repo.name}</a>\
     {{if event.type == "PullRequestEvent"}}\
     <p>${event.payload.pull_request.body}</p>\
@@ -32,7 +32,12 @@ var markup = '<div class="post-card" id="github-post">\
     <p><a href="${event.payload.issue.html_url}">${event.payload.issue.title}</a></p>\
     {{/if}}\
 </div>\
-<!--end of the post item-->'
+<!--end of the post item-->\
+<!--start of the post base-->\
+        <div class="post-base">\
+            <span class="label label-danger" style="float:left;">GITHUB</span>\
+        </div>\
+<!--end of the post base-->'
 
 
 $(document).ready(function() {
@@ -97,7 +102,7 @@ $(document).ready(function() {
 
         if (type === "all"){
             // console.log("all post");
-
+            $('div[id^="github-post"]').show();
             $('div[id^="non-github-post"]').show();
 
         }else if (type === "local"){
@@ -105,7 +110,6 @@ $(document).ready(function() {
         }else if (type === "remote"){
             console.log("remote");
         }else if (type === "my_post"){
-            console.log("my post");
 
             var authorId = $(".profile-header-info").attr("id");
             $('div[id^="non-github-post"]').show();
@@ -116,6 +120,7 @@ $(document).ready(function() {
                     $(this).hide();
                 }
             });
+            $('div[id^="github-post"]').show();
 
         }else if (type === "public"){
             $('div[id^="non-github-post"]').show();
@@ -151,4 +156,20 @@ $(document).ready(function() {
             $('div[id^="non-github-post"]').hide();
         }
     })
+
+    /**
+     * Handle soriting the post based on the time
+     */
+    $(".btn").promise().done(
+        setTimeout(function() {
+            var board = $("#my-stream");
+            var boards = board.children('.post-card').detach().get();
+        
+            boards.sort(function(a, b) {
+            console.log($(a).find(".post-timestamp").data("date"));
+            return new Date($(a).find(".post-timestamp").data("date")) - new Date($(b).find(".post-timestamp").data("date"));
+            });
+            boards.reverse();
+            board.append(boards);
+        }, 600))
 });
