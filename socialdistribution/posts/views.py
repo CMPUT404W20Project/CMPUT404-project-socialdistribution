@@ -18,9 +18,15 @@ def index(request):
 
     author = request.user
     template = 'posts/posts_base.html'
+    authorFriendList = getFriendsOfAuthor(author)
+    friendList = []
+    for authorFriend in authorFriendList:
+        friendList.append(authorFriend.friend)
+
     local_posts = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
     author_posts = Post.objects.filter(author=author).order_by('-published')
-    posts = [post.serialize() for post in (local_posts | author_posts)]
+    friend_posts = Post.objects.filter(visibility='FRIENDS', unlisted=False, author__in=friendList).order_by('-published')
+    posts = [post.serialize() for post in (local_posts | author_posts| friend_posts)]
     remote_posts = get_public_posts_from_remote_servers()
 
     if remote_posts:
