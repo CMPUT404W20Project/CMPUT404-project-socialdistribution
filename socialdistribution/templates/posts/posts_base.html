@@ -4,26 +4,39 @@
 {% load tz %}
 
 {% block posts %}
+<!-- https://www.w3schools.com/howto/howto_js_filter_elements.asp -->
+<!-- Control buttons -->
+<div class="post-back">
+<div id="myBtnContainer">
+    <button class="btn btn-default" id="all"> Show all</button>
+    <button class="btn btn-default" id="local"> Local</button>
+    <button class="btn btn-default" id="remote"> Remote</button>
+    <button class="btn btn-default" id="public"> Public</button>
+    <button class="btn btn-success" id="my_post"> My Posts</button>
+    <button class="btn btn-info" id="friend"> Friend</button>
+    <button class="btn btn-danger" id="github"> Github</button>
+</div>
+
 <ul id="my-stream">
 {% if latest_post_list %}
     {% for post in latest_post_list %}
-    <div class="post-card">
+    <div class="post-card" id="non-github-post" name="{{ post.visibility }}">
         <!--start of the post heading-->
         <div class="post-heading">
-            <div class="post-author">
+            <div class="post-author" id="{{ post.author.id }}">
                 <div class="post-author-img">
-                  <img src="/media/temp.png"  alt="">
+                    <img src="/media/{{ post.author.profile_img }}"  alt="">
                 </div>
                 <div class="post-author-body">
-                    <p class="post-author-name">{{ post.author.displayName }}</p>
-                    <p class="post-timestampe">{{ post.published }}</p>
+                    <span class="post-author-name">{{ post.title }}</span>
+                    <h6>{{ post.author.displayName }}</h6>
+                    <p class="post-timestamp" data-date="{{ post.published }}">{{ post.published }}</p>
                 </div>
             </div>
         </div>
         <!--end of the post heading-->
         <!--start of the post item-->
-        <div class="post-item">
-            <h5 class="post-card-title">{{ post.title }}</h5>
+        <div class="post-item" style="overflow: scroll; max-height: 230px;">
             {% if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" %}
             <img class = "imagePost" src="data:{{ post.contentType }},{{ post.content }}" />
             {% else %}
@@ -38,10 +51,21 @@
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
+            {% if post.visibility == "PUBLIC" %}
+            <span class="label label-default" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "PRIVATE" %}
+            <span class="label label-success" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FRIENDS" %}
+            <span class="label label-info" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FOAF" %}
+            <span class="label label-primary" style="float:left;">{{ post.visibility }}</span>
+            {% elif post.visibility == "SERVERONLY" %}
+            <span class="label label-warning" style="float:left;">{{ post.visibility }}</span>
+            {% endif %}
             <ul>
                 <li><div class="post-detail-link">
                     <button type="button" class="btn btn-default btn-sm" >
-                        <a href="/stream/{{ post.id }}/">Read Detail/Comment</a>
+                        <a href="/stream/{{ post.id }}/">Read More/Comment</a>
                     </button>
                 </div></li>
             </ul>
@@ -53,5 +77,6 @@
     <p>No posts are available.</p>
 {% endif %}
 </ul>
+</div>
 <script type="text/javascript" src="{% static '/js/posts_stream.js' %}"></script>
 {% endblock posts %}

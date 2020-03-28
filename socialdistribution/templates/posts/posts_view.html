@@ -4,8 +4,9 @@
 {% load markdownify %}
 
 {% block post_detail %}
+<div class="post-back">
     <!--post container-->
-    <div class="post-card" id="{{ post.id }}">
+    <div class="post-card" id="{{ post.id }}" name="{{ post.visibility }}">
         <!--start of the post heading-->
         <div class="post-heading">
             <div class="post-author">
@@ -18,7 +19,7 @@
                 </div>
             </div>
             <div class="buttons-wrap">
-              <button class="btn btn-danger" id="delete-post"><span class="glyphicon glyphicon-trash"></span> Delete</button>
+              <button class="btn btn-danger" id="delete-post" style="margin-bottom: 2pt;"><span class="glyphicon glyphicon-trash"></span> Delete</button>
               <a class="btn btn-primary" href="/stream/{{ post.id }}/edit"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
             </div>
         </div>
@@ -39,14 +40,27 @@
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
+            {% if post.visibility == "PUBLIC" %}
+            <span class="label label-default" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
+            {% elif post.visibility == "PRIVATE" %}
+            <span class="label label-success" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FRIENDS" %}
+            <span class="label label-info" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
+            {% elif post.visibility == "FOAF" %}
+            <span class="label label-primary" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
+            {% elif post.visibility == "SERVERONLY" %}
+            <span class="label label-warning" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
+            {% endif %}
             <ul>
-                <span class="comment_count">
+                <span class="comment_count label label-success">
                     {% if comments %}
                     {% if comments.count == 1 %}
-                    <p>1 Comment</p>
+                    <span>1 Comment</span>
                     {% else %}
-                    <p>{{ comments.count }} Comments</p>
+                    <span>{{ comments.count }} Comments</span>
                     {% endif %}
+                    {% else %}
+                    <span>0 Comment</span>
                     {% endif %}
                 </span>
                 <li><div class="post-detail-link">
@@ -62,14 +76,14 @@
             <form method = "post">
                 {% csrf_token %}
                 {{ comment_form.comment }}
-                <button type="submit" class="comment-post-button">COMMENT</button>
+                <button type="submit" class="label label-success">COMMENT</button>
             </form>
 
             <div class="comment-section">
                 {% for comment in comments %}
                 <div class="comment-card">
                     <div class="comment-author-img">
-                        <img src="/media/{{ author.profile_img }}" alt="">
+                        <img src="/media/{{ comment.author.profile_img }}" alt="">
                     </div>
                     <div class="comment-body">
                         <div class="comment-body-info">
@@ -86,6 +100,6 @@
         </div>
          <!--end of the post comment-->
     </div>
+</div>
 <script type="text/javascript" src="{% static 'js/posts.js' %}"></script>
-<script>http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.min.js</script>
 {% endblock post_detail %}
