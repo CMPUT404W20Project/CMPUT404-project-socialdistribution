@@ -25,7 +25,8 @@
           {{ form.unlisted }} Unlisted<br>
 
           <span class="fa fa-camera"></span> {{ form.image_file }}
-          <span class="fa fa-list-alt ">  {{ form.categories }}</span><br>
+          <span class="fa fa-list-alt "> Categories:</span> <br>
+          <input type="text" data-role="tagsinput" class="form-control" name="categories"><br>
           <span class="fa fa-calendar">  {{ form.published}}</span><br>
           <span class="fa fa-users">  {{ form.visibility }}</span>
 
@@ -36,7 +37,8 @@
           <span class="fa fa-camera">{{ form.image_file }} </span><br>
           <span style="margin-left: 1%;">{{ form.unlisted }} Unlisted</span>
           <span style="margin-left: 30%;">Conetent Type: {{ form.contentType }}</span><br>
-          <span class="fa fa-list-alt">  {{ form.categories }}</span>
+          <span class="fa fa-list-alt "> Categories:</span> <br>
+          <input type="text" data-role="tagsinput" class="form-control" name="categories"><br>
           <span style="margin-left: 33%; margin-right: 33%; display:inline-block;">  {{ form.published }}</span><br>
           <span class="fa fa-users" id="post-visibility" style="margin-left: -45%;" >  {{ form.visibility }}</span><br>
 
@@ -61,4 +63,5 @@
   </div>
 </div>
 <script type="text/javascript" src="{% static 'js/posts.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/bootstrap-tagsinput.js' %}"></script>
 {% endblock new_post %}

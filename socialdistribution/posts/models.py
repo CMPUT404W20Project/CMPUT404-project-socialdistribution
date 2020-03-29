@@ -2,7 +2,6 @@ import uuid
 
 from django.db import models
 from django import forms
-from PIL import Image
 from profiles.models import Author
 from multiselectfield import MultiSelectField
 from datetime import datetime
@@ -30,8 +29,8 @@ class Post(models.Model):
     FRIENDS = 'FRIENDS'
     PRIVATE = 'PRIVATE'
     SERVERONLY = 'SERVERONLY'
-    WEB = "WEB"
-    TUTORIAL = "TUTORIAL"
+    # WEB = "WEB"
+    # TUTORIAL = "TUTORIAL"
 
     VISIBILITY_CHOICES = (
         (PUBLIC, 'Public'),
@@ -41,23 +40,22 @@ class Post(models.Model):
         (SERVERONLY, 'Server only')
     )
 
-    DESCRIPTION_CHOICES = (
-        (WEB, 'Web'),
-        (TUTORIAL, 'Tutorial')
-    )
+    # DESCRIPTION_CHOICES = (
+    #     (WEB, 'Web'),
+    #     (TUTORIAL, 'Tutorial')
+    # )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.CharField(blank=True, max_length=200)
-    categories = MultiSelectField(max_length=20, choices=DESCRIPTION_CHOICES,
-                                  default=WEB)
+    categories = models.CharField(blank=True, max_length=200)
     published = models.DateTimeField('date published', default=timezone.now)
 
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
     visibleTo = models.TextField(null=True, default="[]")
-    unlisted = models.BooleanField(default=True)
+    unlisted = models.BooleanField(default=False)
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
@@ -71,6 +69,9 @@ class Post(models.Model):
     def origin(self):
         return("%s/posts/%s" % (self.author.host, self.id))
 
+    def categories_as_list(self):
+        return self.categories.split(',')
+
     def serialize(self):
 
         fields = ["id", "title", "description", "categories", "published",
@@ -81,7 +82,10 @@ class Post(models.Model):
             if field == "author":
                 post["author"] = self.author.serialize()
             elif field == "published":
-                post["published"] = self.published.isoformat()
+                post["published"] = timezone.localtime(self.published)
+            elif field == "categories":
+                if self.categories != "":
+                    post["categories"] = self.categories.split(',')
             else:
                 post[field] = str(getattr(self, field))
 

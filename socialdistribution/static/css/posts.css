@@ -88,6 +88,16 @@
   flex-direction: column;
 }
 
+
+#button-categories {
+  height: fit-content;
+  width: fit-content;
+  margin: auto;
+  padding: 1px 9px;
+  display: inline-block;
+  line-height: 20px;
+  text-align: center;
+
 #myBtnContainer {
     padding-bottom: 10pt;
     padding-top: 10pt;
