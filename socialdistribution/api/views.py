@@ -69,7 +69,7 @@ def posts(request):
             return JsonResponse(response_body, status=404)
 
         # get the page
-        # note: the off-by-ones here are because Paginator is 1-indexed 
+        # note: the off-by-ones here are because Paginator is 1-indexed
         # and the example article responses are 0-indexed
         page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -352,7 +352,7 @@ def specific_author_posts(request, author_id):
         return JsonResponse(response_body, status=404)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -430,7 +430,7 @@ def author_posts(request):
         return JsonResponse(response_body, status=404)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -520,7 +520,7 @@ def post_comments(request, post_id):
             return JsonResponse(response_body, status=404)
 
         # get the page
-        # note: the off-by-ones here are because Paginator is 1-indexed 
+        # note: the off-by-ones here are because Paginator is 1-indexed
         # and the example article responses are 0-indexed
         page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -529,7 +529,7 @@ def post_comments(request, post_id):
             "query": "comments",
             "count": paginator.count,
             "size": int(page_size),
-            "posts": [comment_to_dict(comment) for comment in page_obj],
+            "comments": [comment_to_dict(comment) for comment in page_obj],
         }
 
         # give a url to the next page if it exists
