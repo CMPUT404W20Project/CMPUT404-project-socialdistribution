@@ -29,6 +29,7 @@ def index(request):
     posts = [post.serialize() for post in (local_posts | author_posts| friend_posts)]
     remote_posts = get_public_posts_from_remote_servers()
 
+
     if remote_posts:
         posts += remote_posts
 
@@ -96,7 +97,7 @@ def edit_post(request, post_id):
         'author': author,
         'friendList': friendList,
     }
-    
+
     if request.method == 'POST':
         if form.is_valid():
             new_content = form.save(commit=False)

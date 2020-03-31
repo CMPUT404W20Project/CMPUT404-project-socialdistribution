@@ -1,10 +1,7 @@
 import uuid
 
 from django.db import models
-from django import forms
 from profiles.models import Author
-from multiselectfield import MultiSelectField
-from datetime import datetime
 from django.utils import timezone
 
 
@@ -40,11 +37,6 @@ class Post(models.Model):
         (SERVERONLY, 'Server only')
     )
 
-    # DESCRIPTION_CHOICES = (
-    #     (WEB, 'Web'),
-    #     (TUTORIAL, 'Tutorial')
-    # )
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.CharField(blank=True, max_length=200)
@@ -74,9 +66,10 @@ class Post(models.Model):
 
     def serialize(self):
 
-        fields = ["id", "title", "description", "categories", "published",
-                  "author", "visibility", "visibleTo", "unlisted",
-                  "contentType", "content"]
+        fields = ["title", "source", "origin", "description",
+                  "contentType", "content", "author", "categories",
+                  "published", "id", "visibility", "visibleTo", "unlisted",
+                  ]
         post = dict()
         for field in fields:
             if field == "author":
@@ -104,3 +97,18 @@ class Comment(models.Model):
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
+
+    def serialize(self):
+
+        fields = ["author", "comment", "contentType", "published",
+                  "id"]
+        comment = dict()
+        for field in fields:
+            if field == "author":
+                comment["author"] = self.author.serialize()
+            elif field == "published":
+                comment["published"] = timezone.localtime(self.published)
+            else:
+                comment[field] = str(getattr(self, field))
+
+        return comment
