@@ -4,9 +4,20 @@ from django.core.paginator import Paginator
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
 from profiles.utils import getFriendsOfAuthor
+from servers.models import Server
 
 from datetime import datetime
 import dateutil.parser
+
+
+def authenticate_server(username, password):
+    try:
+        if Server.objects.get(local_server_user=username,
+                              local_server_pass=password):
+            return True
+        return False
+    except:
+        return False
 
 
 def post_to_dict(post, request):
@@ -18,7 +29,7 @@ def post_to_dict(post, request):
     paginator = Paginator(comments, page_size)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page("1")
 

@@ -2,7 +2,7 @@ import base64
 
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login
-
+from .utils import authenticate_server
 
 #############################################################################
 # Check first if a user object is authenticated, then check if basic auth
@@ -25,9 +25,15 @@ def check_auth(view):
             if auth[0].lower() == "basic":
                 uname, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':', 1)
 
+                if authenticate_server(username=uname, password=passwd):
+                    return view(request, *args, **kwargs)
+                else:
+                    response = HttpResponse()
+                    response.status_code = 401
+                    response['WWW-Authenticate'] = 'Basic'
+                    return response
                 # Check if user exists
                 user = authenticate(username=uname, password=passwd)
-
                 # If user exists, and is active, login user and then check that they're authenticated, then return view
                 if user is not None:
                     if user.is_active:
