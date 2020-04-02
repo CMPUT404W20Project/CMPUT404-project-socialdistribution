@@ -58,7 +58,7 @@ class ProfileSignup(UserCreationForm):
                                         'class': 'form-control custom',
                                         'placeholder': 'Gmail'
                                         }
-                                    )
+                                    ),
         }
 
         labels = {
