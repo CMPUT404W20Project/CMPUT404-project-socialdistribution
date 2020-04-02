@@ -15,6 +15,8 @@ from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
 from .models import AuthorFriend, Author
 import base64
 
+from django.contrib.sites.models import Site
+import os
 
 @login_required
 def index(request):
@@ -127,9 +129,35 @@ def register(request):
     if request.method == "POST":
         form = ProfileSignup(request.POST)
         print("Checking if form is VALID...")
+        print(Site)
+        print(Site.objects.get_current().domain)
+        print(Site.objects.get_current().name)
+        import socket
+        from django.http import HttpResponse
+
+        
+        # print(HttpResponse.build_absolute_uri('/'))
+        print(Site.objects.get_current())
+        print(Site.objects.get_current())
+        print(Site)
+        #THIS WORKS
+        domain = request.get_host()
+        print(domain)
+        # import socket
+        print(socket.gethostbyname(socket.gethostname()))
+        HOSTNAME = ""
+        try:
+            HOSTNAME = socket.gethostname()
+        except:
+            HOSTNAME = 'localhost'
+        print("HOST NAME")
+        print(HOSTNAME)
+        print(os.environ.get('HOSTNAME'))
+        # print(Site.objects.get_absolute_url())
         if form.is_valid():
             print("...form is valid!")
             form.save()
+
             return redirect("/accounts/login")
         else:
             print("...form is INVALID!")
