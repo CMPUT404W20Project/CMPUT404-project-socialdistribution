@@ -39,7 +39,8 @@ class ProfileSignup(UserCreationForm):
 
     class Meta:
         model = Author
-        fields = ['firstName', 'lastName', 'email', 'password1', 'password2']
+        fields = ['firstName', 'lastName', 'email', 'password1', 'password2', 'host']
+        # fields['host'].widget = forms.HiddenInput()
         widgets = {
                     'firstName': TextInput(
                                     attrs={
@@ -59,6 +60,13 @@ class ProfileSignup(UserCreationForm):
                                         'placeholder': 'Gmail'
                                         }
                                     ),
+                    'host' : TextInput(
+                                    attrs = {
+                                        'hidden': True,
+                                        'placeholder': 'changeme',
+                                        'value': 'changeme.com'
+                                    }
+                                ),
         }
 
         labels = {

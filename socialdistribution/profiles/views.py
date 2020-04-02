@@ -128,36 +128,28 @@ def register(request):
     template = "login/register.html"
     if request.method == "POST":
         form = ProfileSignup(request.POST)
-        print("Checking if form is VALID...")
-        print(Site)
-        print(Site.objects.get_current().domain)
-        print(Site.objects.get_current().name)
-        import socket
-        from django.http import HttpResponse
 
-        
-        # print(HttpResponse.build_absolute_uri('/'))
-        print(Site.objects.get_current())
-        print(Site.objects.get_current())
-        print(Site)
-        #THIS WORKS
-        domain = request.get_host()
-        print(domain)
-        # import socket
-        print(socket.gethostbyname(socket.gethostname()))
-        HOSTNAME = ""
-        try:
-            HOSTNAME = socket.gethostname()
-        except:
-            HOSTNAME = 'localhost'
-        print("HOST NAME")
-        print(HOSTNAME)
-        print(os.environ.get('HOSTNAME'))
-        # print(Site.objects.get_absolute_url())
+       
         if form.is_valid():
             print("...form is valid!")
-            form.save()
+            #Need to manually set form value for domain here.
+            #THIS WORKS
+            domain = request.get_host()
+            print(domain)
 
+            # form = copy(form)
+            # form['host'] = domain
+
+            instance = form.save(commit=False)
+            instance.host = domain
+            print(instance.host)
+
+            instance.save()
+            # form.cleaned_data['host'] = domain
+            # form.fields['host'] = domain
+
+
+            # form.save()
             return redirect("/accounts/login")
         else:
             print("...form is INVALID!")
