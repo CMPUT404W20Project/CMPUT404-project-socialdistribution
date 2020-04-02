@@ -135,11 +135,12 @@ def register(request):
         if form.is_valid():
             print("...form is valid!")
             #Manually get host
-            domain = request.get_host()
+            domain = "http://%s/" % request.get_host()
 
             #Calling form.save makes a valid instance of the author, but doesn't push to db
             instance = form.save(commit=False)
             #Manually change host to that of the server.
+
             instance.host = domain
             print(instance.host)
             #Save author object to database.
