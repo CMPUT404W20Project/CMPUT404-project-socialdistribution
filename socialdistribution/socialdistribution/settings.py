@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'servers.apps.ServersConfig',
-    'django.contrib.sites',
     # Third Party
     'markdownify',
     'bootstrap_datepicker_plus',
@@ -143,5 +142,3 @@ LOGIN_REDIRECT_URL = '/stream'
 BOOTSTRAP4 = {
     'include_jquery': True,
 }
-
-SITE_ID = 1
