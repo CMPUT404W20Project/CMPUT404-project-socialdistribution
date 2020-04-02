@@ -15,7 +15,6 @@ from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
 from .models import AuthorFriend, Author
 import base64
 
-import os
 
 @login_required
 def index(request):
