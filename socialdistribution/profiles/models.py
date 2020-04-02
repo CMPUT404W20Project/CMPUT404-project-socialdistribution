@@ -5,8 +5,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
-from django.http import HttpResponse
-from django.contrib.sites.models import Site
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
@@ -50,7 +49,6 @@ class Author(AbstractBaseUser, PermissionsMixin):
     "bio": "Hi, I'm Lara"
     }
     """
-    print(Site.objects.get_current())
     # id is previously defined along with the host which seems odd. For now,
     # only defined id as the uuid, may need to change in the future to
     # match specs.

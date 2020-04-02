@@ -15,7 +15,6 @@ from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
 from .models import AuthorFriend, Author
 import base64
 
-from django.contrib.sites.models import Site
 import os
 
 @login_required
@@ -126,30 +125,26 @@ def view_author_profile(request, author_id):
 
 def register(request):
     template = "login/register.html"
+    print(request.get_host())
+    print(request.build_absolute_uri)
+    
     if request.method == "POST":
         form = ProfileSignup(request.POST)
 
        
         if form.is_valid():
             print("...form is valid!")
-            #Need to manually set form value for domain here.
-            #THIS WORKS
+            #Manually get host
             domain = request.get_host()
-            print(domain)
 
-            # form = copy(form)
-            # form['host'] = domain
-
+            #Calling form.save makes a valid instance of the author, but doesn't push to db
             instance = form.save(commit=False)
+            #Manually change host to that of the server.
             instance.host = domain
             print(instance.host)
-
+            #Save author object to database.
             instance.save()
-            # form.cleaned_data['host'] = domain
-            # form.fields['host'] = domain
 
-
-            # form.save()
             return redirect("/accounts/login")
         else:
             print("...form is INVALID!")
