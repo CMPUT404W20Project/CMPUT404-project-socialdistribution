@@ -24,11 +24,16 @@ var vm = new Vue({
     data: function () {
         return {
             posts: [],
+            filteredPosts: [],
             currentAuthor: {},
             mode: "posts",
             focusPost: null,
             focusAuthor: null,
-            converter: null        
+            converter: null,
+            postCategories: new Set(),
+            filterCategories: new Set(),
+            filterLocal: true,
+            filterRemote: true
         }
     },
     methods: {
@@ -40,8 +45,38 @@ var vm = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.posts = json["posts"];
-                    // console.log(this.posts);
+                    this.updateCategories();
+                    this.filterPosts();
                 });
+        },
+        updateCategories: function () {
+            this.postCategories.clear();
+            for (let post of this.posts) {
+                for (let category of post.categories) {
+                    this.postCategories.add(category);
+                }
+            }
+            // workaround since vue does not support reactive Sets
+            this.postCategories = new Set(this.postCategories);
+        },
+        filterPosts: function () {
+            this.filteredPosts.clear();
+            for (let post of this.posts) {
+                // TODO
+                if (this.filterLocal && true) {
+                    this.filteredPosts.push(post);
+                }
+            }
+        },
+        toggleCategory: function (category) {
+            if (this.filterCategories.has(category)) {
+                this.filterCategories.delete(category);
+            }
+            else {
+                this.filterCategories.add(category);
+            }
+            // workaround since vue does not support reactive Sets
+            this.filterCategories = new Set(this.filterCategories);
         },
         // Get the currently authenticated user
         getCurrentAuthor: function () {

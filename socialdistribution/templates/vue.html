@@ -55,8 +55,20 @@
         <div class="container" id="posts" v-if="mode == 'posts'">
             <!-- this means Django won't render this part -->
             {% verbatim %}
+            <div class="card post-card">
+                <div class="card-body">
+                    <h3 class="card-title">Filters</h3>
+                    <div>
+                        <button type="button" class="btn" v-bind:class="[filterLocal ? 'btn-primary' : 'btn-secondary']" v-on:click="filterLocal = !filterLocal">Local Posts<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                        <button type="button" class="btn" v-bind:class="[filterRemote ? 'btn-primary' : 'btn-secondary']" v-on:click="filterRemote = !filterRemote">Remote Posts<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                    </div>
+                    <div style="margin-top: 0.25em;">
+                        <button type="button" style="margin-right: 0.25em;" class="btn" v-bind:class="[filterCategories.has(category) ? 'btn-primary' : 'btn-secondary']" v-on:click="toggleCategory(category)" v-for="category in postCategories">{{ category }}<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                    </div>
+                </div>
+            </div>
             <!-- create one of these divs for each post in data.posts -->
-            <div v-for="post in posts">
+            <div v-for="post in filteredPosts">
                 <div class="card post-card">
                     <div class="card-body">
                         <h5 class="card-title">{{ post.title }}</h5>
