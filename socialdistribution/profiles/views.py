@@ -134,6 +134,7 @@ def register(request):
             domain = "http://%s/" % request.get_host()
 
             #Calling form.save makes a valid instance of the author, but doesn't push to db
+            #https://stackoverflow.com/a/20177911
             instance = form.save(commit=False)
             #Manually change host to that of the server.
 
