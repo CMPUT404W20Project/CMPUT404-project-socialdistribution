@@ -166,7 +166,7 @@ var vm = new Vue({
             window.location.replace(`/stream/${post.id}`);
         },
         viewAuthor: function(author) {
-            window.location.replace(`/viewprofile/${author.id}`);
+            window.location.replace(`/author/${author.id}/profile`);
         }
     },
     // runs when the vue app is created
