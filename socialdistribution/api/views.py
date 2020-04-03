@@ -459,7 +459,7 @@ def author_posts(request):
 def post_comments(request, post_id):
     # get the post
     posts = Post.objects.filter(id=post_id)
-
+    
     # post does not exist - 404 Not Found
     if posts.count() == 0:
         response_body = {
