@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <title>Vue Example</title>
+        
+        <!-- bootstrap CSS framework -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <!-- font awesome (icons) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" crossorigin="anonymous">
+        <!-- our CSS -->
+        <link rel="stylesheet" href="{% static 'css/vue.css' %}">
+        
+        <!-- our JS -->
+        <script defer type="text/javascript" src="{% static 'js/vue.js' %}"></script>
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+        <!-- Showdown (Markdown renderer) -->
+        <script src="https://cdn.jsdelivr.net/npm/showdown@1.9.1/dist/showdown.min.js"></script>    
+        <!-- DateJS (date parsing) -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/datejs/1.0/date.min.js" integrity="sha256-xljKCznmrf+eJGt+Yxyo+Z3KHpxlppBZSjyDlutbOh0=" crossorigin="anonymous"></script>
+    </head>
+    
+    <body id="main">
+        <div id="vue-app">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">Social Distribution</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/stream">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/authors">Authors</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/viewprofile">My Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/new_post">New Post</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/friends">Friends</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!--POSTS-->
+        <div class="container" id="posts">
+            <!-- this means Django won't render this part -->
+            {% verbatim %}
+            <div class="card post-card">
+                <div class="card-body">
+                    <h3 class="card-title">Filters (NOT YET IMPLEMENTED)</h3>
+                    <div>
+                        <button type="button" class="btn" v-bind:class="[filterLocal ? 'btn-primary' : 'btn-secondary']" v-on:click="filterLocal = !filterLocal">Local Posts<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                        <button type="button" class="btn" v-bind:class="[filterRemote ? 'btn-primary' : 'btn-secondary']" v-on:click="filterRemote = !filterRemote">Remote Posts<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                    </div>
+                    <div style="margin-top: 0.25em;">
+                        <button type="button" style="margin-right: 0.25em;" class="btn" v-bind:class="[filterCategories.has(category) ? 'btn-primary' : 'btn-secondary']" v-on:click="toggleCategory(category)" v-for="category in postCategories">{{ category }}<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
+                    </div>
+                </div>
+            </div>
+            <!-- create one of these divs for each post in data.posts -->
+            <div v-for="post in posts">
+                <div class="card post-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ post.title }}</h5>
+                        <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
+                        <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
+
+                        <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                        <span v-else-if="post.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
+                        <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
+                        <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
+
+                        <button type="button" v-on:click="viewPost(post)" class="btn btn-primary">View</button>
+                        <!-- <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button> -->
+                        <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.id == currentAuthor.id">Delete</button>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item" v-for="comment in post.comments">
+                            <div style="padding-left: 3em;">
+                                <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
+                                <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
+
+                                <p v-if="comment.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
+                                <span v-else-if="comment.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(comment.comment)" style="padding-top: 1em;"></span>
+                                <div v-else-if="comment.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${comment.comment}`" alt="Image"></div>
+                                <div v-else-if="comment.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${comment.comment}`" alt="Image"></div>
+                            </div>
+                        </li>
+                        <li class="list-group-item">
+                            <label for="exampleFormControlTextarea1">Enter a comment:</label>
+                            <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
+                            <button type="button" v-on:click="commentOnPost(post.id)" class="btn btn-primary" style="margin-top: 1em;">Submit</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            {% endverbatim %}
+        </div>
+    </div>
+</body>
+
+</html>

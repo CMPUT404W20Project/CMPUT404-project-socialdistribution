@@ -15,6 +15,13 @@ from api.utils import author_can_see_post
 
 @login_required
 def index(request):
+    template = 'vue/stream.html'
+    
+    return render(request, template, {})
+
+
+@login_required
+def old_stream(request):
 
     author = request.user
     template = 'posts/posts_base.html'
