@@ -44,7 +44,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    # objects = CustomUserManager()
+    objects = BaseUserManager()
 
 
 # Need to subclass PermissionMixin to have the properties of admin accounts.
@@ -110,9 +110,9 @@ class Author(models.Model):
 # If table contains (1,2) and (2,1) then 1 and 2 are friends and request was
 # accepted.
 class AuthorFriend(models.Model):
-    author = models.ForeignKey(Author, related_name="AuthorFriend_author",
+    author = models.ForeignKey(User, related_name="AuthorFriend_author",
                                on_delete=models.CASCADE, null=True)
-    friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
+    friend = models.ForeignKey(User, related_name="AuthorFriend_friend",
                                on_delete=models.CASCADE, null=True)
 
     class Meta:
