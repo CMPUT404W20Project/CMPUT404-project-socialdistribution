@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import TextInput, EmailInput
 from django.contrib.auth.forms import UserCreationForm
+from django.forms import ModelForm
 from .models import Author, User
 
 
@@ -56,7 +57,7 @@ class UserSignup(UserCreationForm):
                     'email': False,
         }
 
-class AuthorSignup(UserCreationForm):
+class AuthorSignup(ModelForm):
 
     class Meta:
         model = Author

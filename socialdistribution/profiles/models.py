@@ -13,22 +13,22 @@ from django.dispatch import receiver
 from PIL import Image
 
 
-# Have to do this because in settings.py USER_AUTH_MODEL is set to Author.
-# Because of that, the admin page switches to requiring an email instead of user name.
-class CustomUserManager(BaseUserManager):
-    # Over riding create_superuser as otherwise the default implementation
-    # doesn't work with the custom model.
-    def create_superuser(self, email, password=None):
-        user = self.model(
-            email=self.normalize_email(email),
-        )
-        user.set_password(password)
-        user.is_admin = True
-        user.is_staff = True
-        # user.is_superuser = True
-        user.is_active = True
-        user.save()
-        return user
+# # Have to do this because in settings.py USER_AUTH_MODEL is set to Author.
+# # Because of that, the admin page switches to requiring an email instead of user name.
+# class CustomUserManager(BaseUserManager, PermissionsMixin):
+#     # Over riding create_superuser as otherwise the default implementation
+#     # doesn't work with the custom model.
+#     def create_superuser(self, email, password=None):
+#         user = self.model(
+#             email=self.normalize_email(email),
+#         )
+#         user.set_password(password)
+#         user.is_admin = True
+#         user.is_staff = True
+#         # user.is_superuser = True
+#         user.is_active = True
+#         user.save()
+#         return user
 
 
 
@@ -44,11 +44,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
-    objects = CustomUserManager()
+    # objects = CustomUserManager()
 
 
 # Need to subclass PermissionMixin to have the properties of admin accounts.
-class Author(AbstractUser):
+class Author(models.Model):
     """
     definition of author from 'example-article.json'
     "author":{

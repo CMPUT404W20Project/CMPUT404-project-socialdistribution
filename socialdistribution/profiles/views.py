@@ -125,22 +125,36 @@ def view_author_profile(request, author_id):
 def register(request):
     template = "login/register.html"
     if request.method == "POST":
-        form = ProfileSignup(request.POST)
+        form_author = AuthorSignup(request.POST)
+        form_user = UserSignup(request.POST)
         print("Checking if form is VALID...")
-        if form.is_valid():
+        if form_user.is_valid() and form_author.is_valid:
             print("...form is valid!")
-            form.save()
+            # form.save()
+            # Have to manually save objects here.
+            new_user = form_user.save()
+
+            # Need to manually add user to author here.
+            author = form_author.save(commit = False)
+            author.user = new_user
+
+            # Manually save new author here
+            author.save()
+
             return redirect("/accounts/login")
         else:
             print("...form is INVALID!")
-            print(form.errors)
+            print(form_user.errors)
+            print(form_author.errors)
             context = {
-                'form': form,
+                'form_author': form_author, 'form_user' : form_user,
             }
     else:
-        form = ProfileSignup()
+        form_user = UserSignup()
+        form_author = AuthorSignup()
+
         context = {
-            'form': form,
+            'form_author': form_author, 'form_user' : form_user,
         }
 
     return render(request, template, context)
