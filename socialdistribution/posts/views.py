@@ -27,7 +27,6 @@ def index(request):
     author_posts = Post.objects.filter(author=author).order_by('-published')
     friend_posts = Post.objects.filter(visibility='FRIENDS', unlisted=False, author__in=friendList).order_by('-published')
     posts = [post.serialize() for post in (local_posts | author_posts| friend_posts)]
-    print(posts[0])
     remote_posts = get_public_posts_from_remote_servers()
 
     if remote_posts:

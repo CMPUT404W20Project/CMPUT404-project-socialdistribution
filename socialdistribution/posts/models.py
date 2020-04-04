@@ -7,7 +7,6 @@ from multiselectfield import MultiSelectField
 from datetime import datetime
 from django.utils import timezone
 
-from profiles.models import Author
 
 MARKDOWN = 'text/markdown'
 PLAIN = 'text/plain'
@@ -52,7 +51,7 @@ class Post(models.Model):
     categories = models.CharField(blank=True, max_length=200)
     published = models.DateTimeField('date published', default=timezone.now)
 
-    # author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
     visibleTo = models.TextField(null=True, default="[]")
@@ -61,9 +60,6 @@ class Post(models.Model):
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
     content = models.TextField(blank=True)
-
-    author = models.OneToOneField(Author, on_delete=models.CASCADE, default = '')
-  
 
     @property
     def source(self):

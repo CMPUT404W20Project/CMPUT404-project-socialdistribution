@@ -1,7 +1,7 @@
 from django import forms
 from django.forms import TextInput, EmailInput
 from django.contrib.auth.forms import UserCreationForm
-from .models import Author
+from .models import Author, User
 
 
 class ProfileForm(forms.ModelForm):
@@ -17,7 +17,9 @@ class ProfileForm(forms.ModelForm):
             'profile_img',
         ]
 
-class ProfileSignup(UserCreationForm):
+
+
+class UserSignup(UserCreationForm):
     password1 = forms.CharField(label=False,
                                 widget=forms.TextInput(
                                     attrs={
@@ -38,8 +40,27 @@ class ProfileSignup(UserCreationForm):
                                 )
 
     class Meta:
+        model = User
+        fields = ['email', 'password1', 'password2']
+        widgets = {
+
+                    'email': EmailInput(
+                                    attrs={
+                                        'class': 'form-control custom',
+                                        'placeholder': 'Gmail'
+                                        }
+                                    ),
+        }
+
+        labels = {
+                    'email': False,
+        }
+
+class AuthorSignup(UserCreationForm):
+
+    class Meta:
         model = Author
-        fields = ['firstName', 'lastName', 'email', 'password1', 'password2']
+        fields = ['firstName', 'lastName']
         widgets = {
                     'firstName': TextInput(
                                     attrs={
@@ -53,16 +74,10 @@ class ProfileSignup(UserCreationForm):
                                         'placeholder': 'Last Name'
                                         }
                                     ),
-                    'email': EmailInput(
-                                    attrs={
-                                        'class': 'form-control custom',
-                                        'placeholder': 'Gmail'
-                                        }
-                                    ),
+
         }
 
         labels = {
                     'firstName': False,
                     'lastName': False,
-                    'email': False,
         }

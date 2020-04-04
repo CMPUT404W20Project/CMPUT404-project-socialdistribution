@@ -2,7 +2,7 @@ import uuid
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.models import User, UserManager, AbstractUser
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 
@@ -25,14 +25,30 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.is_admin = True
         user.is_staff = True
-        user.is_superuser = True
+        # user.is_superuser = True
         user.is_active = True
         user.save()
         return user
 
 
+
+class User(AbstractBaseUser, PermissionsMixin):
+    """User model."""
+
+    username = None
+    email = models.EmailField(('email address'), unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = CustomUserManager()
+
+
 # Need to subclass PermissionMixin to have the properties of admin accounts.
-class Author(AbstractBaseUser, PermissionsMixin):
+class Author(AbstractUser):
     """
     definition of author from 'example-article.json'
     "author":{
@@ -53,7 +69,6 @@ class Author(AbstractBaseUser, PermissionsMixin):
     # only defined id as the uuid, may need to change in the future to
     # match specs.
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    email = models.EmailField(unique=True)
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
@@ -63,30 +78,31 @@ class Author(AbstractBaseUser, PermissionsMixin):
     profile_img = models.FileField(default='temp.png', upload_to='profile/')
     password = models.CharField(max_length=255, default="changeme")
 
-    objects = CustomUserManager()
-    is_staff = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=True)
+    # is_active = models.BooleanField(default=True)
 
-    USERNAME_FIELD = 'email'
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default = '')
+    # email found in user
+
+    # USERNAME_FIELD = 'email'
 
     # Not sure if this is the right appraoch or we should be storing this field
     @property
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
-        return("%s/author/%s" % (self.host, self.id))
+        return("%s/author/%s" % (self.host, self.user.id))
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
 
     def serialize(self):
-        fields = ["id", "email", "firstName", "lastName", "displayName", "bio",
+        fields = ["id",  "firstName", "lastName", "displayName", "bio",
                   "host", "github", "profile_img"]
         author = dict()
         for field in fields:
             author[field] = str(getattr(self, field))
 
+        author["email"] = str(self.user.email)
         return author
 
 # A model to store authors request to follow another author

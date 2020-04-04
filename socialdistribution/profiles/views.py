@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 
 from posts.forms import PostForm
-from .forms import ProfileForm, ProfileSignup
+from .forms import ProfileForm, AuthorSignup, UserSignup
 
 from .decorators import check_authentication
 from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\

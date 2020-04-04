@@ -1,7 +1,7 @@
 import uuid
 from django.db import models
 from django.utils.crypto import get_random_string
-from profiles.models import Author
+from profiles.models import User
 
 def generate_password():
     return get_random_string(length=16)
@@ -24,7 +24,7 @@ class Server(models.Model):
     local_server_pass = models.CharField(default=generate_password,
                                          max_length=16)
 
-    user = models.OneToOneField(Author, on_delete=models.CASCADE, default = '')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, default = '')
     # permissions for server
     # is_active = models.BooleanField(default=True)
     share_posts = models.BooleanField(default=True)
