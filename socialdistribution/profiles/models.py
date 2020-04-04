@@ -90,19 +90,24 @@ class Author(models.Model):
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
-        return("%s/author/%s" % (self.host, self.user.id))
+        print("IN THE URL")
+        print(self.id)
+        return("%s/author/%s" % (self.host, self.id))
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
 
     def serialize(self):
-        fields = ["id",  "firstName", "lastName", "displayName", "bio",
+        fields = ["firstName", "lastName", "displayName", "bio",
                   "host", "github", "profile_img"]
         author = dict()
         for field in fields:
             author[field] = str(getattr(self, field))
 
         author["email"] = str(self.user.email)
+        author["id"] = str(self.id)
+        print(self.id)
+
         return author
 
 # A model to store authors request to follow another author
@@ -110,6 +115,7 @@ class Author(models.Model):
 # If table contains (1,2) and (2,1) then 1 and 2 are friends and request was
 # accepted.
 class AuthorFriend(models.Model):
+    print("MAKING THIS NAJFA")
     author = models.ForeignKey(Author, related_name="AuthorFriend_author",
                                on_delete=models.CASCADE, null=True)
     friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",

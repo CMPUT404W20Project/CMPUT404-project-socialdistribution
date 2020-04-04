@@ -6,7 +6,7 @@ from django.urls import reverse
 from .decorators import check_auth
 
 from urllib import parse
-from profiles.models import Author, AuthorFriend
+from profiles.models import Author, AuthorFriend, User
 from posts.models import Post, Comment
 from profiles.utils import getFriendsOfAuthor
 from .utils import (
@@ -755,9 +755,13 @@ def friend_request(request):
 
         request_body = json.loads(request.body)
 
-        # check that the friend request is valid
-        status = validate_friend_request(request_body)
+        print("HERE IS THING")
+        print(request.body)
 
+        # check that the friend request is valid
+        print(request_body)
+        status = validate_friend_request(request_body)
+        print("Validated")
         # invalid request
         if status != 200:
             response_body = {
@@ -765,10 +769,16 @@ def friend_request(request):
                 "success": False,
                 "message": "Invalid request",
             }
+            print("THIS IS STATUS")
+            print(status)
             return JsonResponse(response_body, status=status)
 
-        author = Author.objects.get(id=request_body["author"]["id"])
+        author = Author.objects.get(id=request_body["author"]["id"]).user
         friend = Author.objects.get(id=request_body["friend"]["id"])
+
+        print("I GOT HERE")
+        print(author)
+        print(request.user)
 
         # make sure authenticated user is the one sending the friend request
         if author != request.user:
@@ -779,7 +789,8 @@ def friend_request(request):
             }
             return JsonResponse(response_body, status=403)
 
-        friend_req = AuthorFriend(author=author, friend=friend)
+        print(" AT FRIEND REQ")
+        friend_req = AuthorFriend(author=author.author, friend=friend)
 
         friend_req.save()
 

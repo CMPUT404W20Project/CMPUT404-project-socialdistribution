@@ -19,6 +19,7 @@
        <a href="/viewprofile/">View Profile</a>
        {% else %}
         <div class="user_author_id" id="{{ user_author.id }}"></div>
+        <div class = "out_user_id" id = {{user.author.id}} ></div>
         <div class="user_author_name" id="{{ user_author.displayName }}"></div>
         <a class="btn send-request btn-primary" id="{{ author.id }}" >Add Friend</a>
        {% endif %}

@@ -37,6 +37,7 @@ def index(request):
 @login_required
 def new_post(request):
     print(request)
+    print("IN NEW POSRT")
     author = request.user
     template = 'posts/posts_form.html'
     form = PostForm(request.POST or None, request.FILES or None, initial={'author': author.author})
@@ -44,7 +45,7 @@ def new_post(request):
 
     context = {
         'form': form,
-        'author': author,
+        'author': author.author,
         'friendList': friendList,
     }
     print("I AM HERE")
@@ -195,7 +196,7 @@ def my_friend_following(request):
 
     author = request.user
     template = 'friends/friends_follow.html'
-    friendFollowList = getFriendRequestsFromAuthor(author)
+    friendFollowList = getFriendRequestsFromAuthor(author.author)
     # friendRequestList = getFriendRequestsToAuthor(author)
 
     context = {
@@ -232,8 +233,10 @@ def search_friends(request):
 @login_required
 def accept_friend(request, friend_id_to_accept):
 
-    author = request.user
+    author = request.user.author
     friend = Author.objects.get(pk=friend_id_to_accept)
+    print("IN ACCEPT")
+    print(author)
 
     if (friend and AuthorFriend.objects.filter(author=friend, friend=author)):
         AuthorFriend.objects.get_or_create(author=author, friend=friend)
@@ -246,7 +249,8 @@ def accept_friend(request, friend_id_to_accept):
 @login_required
 def reject_friend(request, friend_id_to_reject):
 
-    author = request.user
+    print("IN REJECT")
+    author = request.user.author
     friend = Author.objects.get(pk=friend_id_to_reject)
 
     if (friend and AuthorFriend.objects.filter(author=friend, friend=author)):

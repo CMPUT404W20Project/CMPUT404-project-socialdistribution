@@ -282,7 +282,10 @@ def validate_friend_request(request_dict):
             if field not in author.keys() or not isinstance(author[field], field_type):
                 return 400
 
+        print(request_dict)
         # make sure author exists
+        print(author)
+        print("IN VALIDATE")
         results = Author.objects.filter(id=author["id"])
         if results.count() == 0:
             # Not Found

@@ -19,12 +19,22 @@ $(document).ready(function() {
     $(".btn.send-request").click(function(){
 
         var author_name = $(".user_author_name").attr('id');
-        var author_id = $(".user_author_id").attr('id');
+        var author_id = $(".out_user_id").attr('id');
         // Get the friend id
         var friend_name = $(".author-displayName").attr('id');
         var friend_id = $(".btn.send-request").attr('id');
         console.log(author_id);
         console.log(friend_id );
+        console.log("I AM HERERE");
+        console.log($(".user_author_name"));
+        console.log($(".profile-header-info").attr("id"));
+        // console.log(Object.keys($(".user_author_name")));
+        console.log($(".out_user_id").attr("id"));
+        // var variables = ""
+        // for (var name in this)
+        //     variables += name + "\n";
+
+        // console.log(variables)
  
         var requestContent={
             "query":"friendrequest",

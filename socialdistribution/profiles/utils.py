@@ -24,6 +24,7 @@ def getFriendsOfAuthor(author):
 
 
 def getFriendRequestsToAuthor(author):
+    print("IN HERE")
     friend_requests_to_author = []
     author_friends, friends_author = getAuthorFriendRelationships(author)
 
@@ -36,6 +37,7 @@ def getFriendRequestsToAuthor(author):
 
 
 def getFriendRequestsFromAuthor(author):
+    print("IN HERE")
     friend_requests_from_author = []
     author_friends, friends_author = getAuthorFriendRelationships(author)
 
