@@ -51,7 +51,7 @@ class Post(models.Model):
     categories = models.CharField(blank=True, max_length=200)
     published = models.DateTimeField('date published', default=timezone.now)
 
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
     visibleTo = models.TextField(null=True, default="[]")

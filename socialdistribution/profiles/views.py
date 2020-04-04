@@ -40,7 +40,7 @@ def new_post(request):
     author = request.user
     template = 'posts/posts_form.html'
     form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
-    friendList = getFriendsOfAuthor(author)
+    friendList = getFriendsOfAuthor(author.author)
 
     context = {
         'form': form,
@@ -165,7 +165,7 @@ def my_friends(request):
 
     author = request.user
     template = 'friends/friends_list.html'
-    friendList = getFriendsOfAuthor(author)
+    friendList = getFriendsOfAuthor(author.author)
 
     context = {
         'author': author,
@@ -180,7 +180,7 @@ def my_friend_requests(request):
 
     author = request.user
     template = 'friends/friends_request.html'
-    friendRequestList = getFriendRequestsToAuthor(author)
+    friendRequestList = getFriendRequestsToAuthor(author.author)
     context = {
         'author': author,
         'friendRequestList': friendRequestList,

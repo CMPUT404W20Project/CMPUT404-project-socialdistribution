@@ -16,9 +16,9 @@ from api.utils import author_can_see_post
 @login_required
 def index(request):
 
-    author = request.user
+    author = request.user.author
     template = 'posts/posts_base.html'
-    authorFriendList = getFriendsOfAuthor(author)
+    authorFriendList = getFriendsOfAuthor(user.author)
     friendList = []
     for authorFriend in authorFriendList:
         friendList.append(authorFriend.friend)
