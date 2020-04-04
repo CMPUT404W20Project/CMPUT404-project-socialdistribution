@@ -77,7 +77,7 @@ def view_profile(request):
     template = 'profiles/profiles_view.html'
     # form = ProfileForm(instance=author)
     context = {
-        'author': author
+        'author': author.author
     }
 
     return render(request, template, context)
