@@ -36,10 +36,10 @@ def index(request):
 @csrf_exempt
 @login_required
 def new_post(request):
-
+    print(request)
     author = request.user
     template = 'posts/posts_form.html'
-    form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
+    form = PostForm(request.POST or None, request.FILES or None, initial={'author': author.author})
     friendList = getFriendsOfAuthor(author.author)
 
     context = {
@@ -47,8 +47,9 @@ def new_post(request):
         'author': author,
         'friendList': friendList,
     }
-
+    print("I AM HERE")
     if request.method == 'POST':
+        print("POSTED")
         if form.is_valid():
             new_content = form.save(commit=False)
             cont_type = form.cleaned_data['contentType']

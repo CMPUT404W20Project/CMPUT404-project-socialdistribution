@@ -18,7 +18,7 @@ def index(request):
 
     author = request.user.author
     template = 'posts/posts_base.html'
-    authorFriendList = getFriendsOfAuthor(user.author)
+    authorFriendList = getFriendsOfAuthor(author)
     friendList = []
     for authorFriend in authorFriendList:
         friendList.append(authorFriend.friend)
@@ -80,7 +80,7 @@ def view_post(request, post_id):
 
 @login_required
 def edit_post(request, post_id):
-    author = request.user
+    author = request.user.author
     template = 'posts/posts_edit.html'
     post = Post.objects.get(id=post_id)
     friendList = getFriendsOfAuthor(author)

@@ -63,8 +63,8 @@ def author_to_dict(author):
         author_dict["firstName"] = author.firstName
     if author.lastName:
         author_dict["lastName"] = author.lastName
-    if author.email:
-        author_dict["email"] = author.email
+    if author.user.email:
+        author_dict["email"] = author.user.email
     if author.bio:
         author_dict["bio"] = author.bio
 
