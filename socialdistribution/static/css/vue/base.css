@@ -1,0 +1,18 @@
+.post-card {
+    margin: 1em 0;
+}
+
+.post-image {
+    max-width: 50%;
+    max-height: 100%;
+    padding-bottom: 1em;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: whitesmoke;
+}

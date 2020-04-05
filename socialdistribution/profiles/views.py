@@ -103,23 +103,33 @@ def edit_profile(request):
     return render(request, template, context)
 
 def view_author_profile(request, author_id):
-    #The user who login in/use the application
-    # TODO: add cookie or token to store the user
-    user_author = request.user
-
     author = Author.objects.get(id=author_id)
-    template = 'profiles/profiles_view.html'
-    # form = ProfileForm(instance=author)
-    status = True
 
-    if author == user_author:
-        status = False
+    template = 'vue/profile.html'
+
     context = {
-        'user_author': user_author,
-        'author': author,
-        'status': status,
+        'user_id': author.id
     }
     return render(request, template, context)
+
+    # old view here
+    # #The user who login in/use the application
+    # # TODO: add cookie or token to store the user
+    # user_author = request.user
+
+    # author = Author.objects.get(id=author_id)
+    # template = 'profiles/profiles_view.html'
+    # # form = ProfileForm(instance=author)
+    # status = True
+
+    # if author == user_author:
+    #     status = False
+    # context = {
+    #     'user_author': user_author,
+    #     'author': author,
+    #     'status': status,
+    # }
+    # return render(request, template, context)
 
 
 def register(request):
