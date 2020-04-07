@@ -75,6 +75,7 @@ $(document).ready(function() {
 
             $(".open-visibileTo-button").click(function(){
                 var visible_to_list = new Array;
+
                 $("#myForm").show();
                 $(".close-visibileTo-button").click(function(){
                     $("#myForm").hide();
@@ -95,13 +96,13 @@ $(document).ready(function() {
                             }
                         }
                     }
-                    // console.log( visible_to_list);
-                    $("#id_visibleTo").val(visible_to_list.toString());
+                    console.log( visible_to_list);
+                    $("#id_visibleTo").val(visible_to_list);
                 })
             })
 
         }else{
-            $("#id_visibleTo").val("[]");
+            // $("#id_visibleTo").val("[]");
             $(".open-visibileTo-button").css("visibility","hidden");
         }
     });
