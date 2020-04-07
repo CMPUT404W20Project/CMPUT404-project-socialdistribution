@@ -75,7 +75,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
-        return("%s/author/%s" % (self.host, self.id))
+        return("%sauthor/%s" % (self.host, self.id))
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))

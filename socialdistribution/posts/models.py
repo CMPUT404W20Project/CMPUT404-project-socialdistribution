@@ -63,11 +63,11 @@ class Post(models.Model):
 
     @property
     def source(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        return("%sposts/%s" % (self.author.host, self.id))
 
     @property
     def origin(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        return("%sposts/%s" % (self.author.host, self.id))
 
     def categories_as_list(self):
         return self.categories.split(',')
