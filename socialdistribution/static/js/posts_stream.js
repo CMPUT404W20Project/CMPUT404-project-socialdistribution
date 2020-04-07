@@ -45,7 +45,7 @@ $(document).ready(function() {
 
   $("#load_github").click(function(){
     $.ajax({
-      url: '/api/author/' + authorId +'/github',
+      url: '/api/author/github',
       method: 'GET',
       success: function(result) {
         location.replace(location.origin + '/stream');

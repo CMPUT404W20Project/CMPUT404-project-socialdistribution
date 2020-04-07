@@ -35,10 +35,10 @@
             <h5 class="post-card-title">{{ post.title }}</h5>
             {% if post.contentType == "image/png;base64" or post.contentType == "image/jpeg;base64" %}
             <img src="data:{{ post.contentType }},{{ post.content }}" /><br>
-            {% elif post.contentType == "text/markdown" %}
-            <p class="post-card-text">{{ post.content|markdownify }}</p>
+            {% elif post.contentType == "text/markdown" or post.description != '' %}
+            <p class="post-card-text">{{ post.content|markdownify|linebreaksbr }}</p>
             {% else %}
-            <p class="post-card-text">{{ post.content | safe }}</p>
+            <p class="post-card-text">{{ post.content|linebreaksbr }}</p>
             {% endif %}
             {% if post.categories %}
             {% for category in post.categories_as_list %}

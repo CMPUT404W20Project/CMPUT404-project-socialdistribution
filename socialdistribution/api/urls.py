@@ -52,7 +52,7 @@ urlpatterns = [
         csrf_exempt(views.can_see),
         name="api_can_see"),
     path(
-        "author/<uuid:author_id>/github",
+        "author/github",
         csrf_exempt(views.github_posts),
         name= "api_get_author_github_posts"
     )
