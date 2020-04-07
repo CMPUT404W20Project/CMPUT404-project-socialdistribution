@@ -48,7 +48,7 @@ var vm = new Vue({
             });
         },
         commentOnPost: function(post) {
-            const url = `${post.origin}/api/posts/${post.id}/comments`;
+            const url = `${post.origin}/comments`;
 
             let commentInputId = `#comment-${post.id}`;
             // get comment text

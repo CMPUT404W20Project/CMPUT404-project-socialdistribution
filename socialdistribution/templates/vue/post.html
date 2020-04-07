@@ -20,7 +20,7 @@
                 <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
                 <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
 
-                <!-- <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button> -->
+                <button type="button" v-on:click="editPost(post)" class="btn btn-primary"v-if="post.author.url == currentAuthor.id"><i class="fas fa-edit"></i>Edit</button>
 
                 <!-- TODO url vs id -->
                 <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.url == currentAuthor.id"><i class="fas fa-trash-alt"></i>Delete</button>

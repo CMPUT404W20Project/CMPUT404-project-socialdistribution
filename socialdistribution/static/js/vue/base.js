@@ -21,6 +21,10 @@ function viewPost(post) {
     window.location.replace(`/stream/${post.id}`);
 }
 
+function editPost(post) {
+    window.location.replace(`/stream/${post.id}/edit`);
+}
+
 function viewAuthor(author) {
     window.location.replace(`/author/${author.id}/profile`);
 }
