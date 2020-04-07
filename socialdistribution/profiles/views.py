@@ -73,13 +73,17 @@ def author_posts(request, author_id):
 @login_required
 def view_profile(request):
     author = request.user
-    template = 'profiles/profiles_view.html'
-    # form = ProfileForm(instance=author)
-    context = {
-        'author': author
-    }
 
-    return render(request, template, context)
+    return view_author_profile(request, author.id)
+
+    # author = request.user
+    # template = 'profiles/profiles_view.html'
+    # # form = ProfileForm(instance=author)
+    # context = {
+    #     'author': author
+    # }
+
+    # return render(request, template, context)
 
 
 @login_required
