@@ -49,9 +49,8 @@
                 </p>
             </div>
 
-            <button type="button" v-if="profileAuthor.id == currentAuthor.id" v-on:click="window.location.replace('/editprofile');" class="btn btn-primary">Edit Profile</button>
-
-            <br><br><br><p class="card-text">TODO: friend request from profile</p>
+            <button type="button" v-if="profileAuthor.id == currentAuthor.id" v-on:click="window.location.replace('/editprofile');" class="btn btn-primary"><i class="fas fa-edit"></i>Edit Profile</button>
+            <button type="button" v-if="profileAuthor.id != currentAuthor.id" v-on:click="addFriend()" class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
         </div>
     </div>
     {% endverbatim %}

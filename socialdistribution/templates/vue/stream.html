@@ -37,7 +37,7 @@
                 <!-- <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button> -->
 
                 <!-- TODO url vs id -->
-                <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.url == currentAuthor.id">Delete</button>
+                <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.url == currentAuthor.id"><i class="fas fa-trash-alt"></i>Delete</button>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item" v-for="comment in post.comments">
@@ -54,7 +54,7 @@
                 <li class="list-group-item">
                     <label for="exampleFormControlTextarea1">Enter a comment:</label>
                     <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
-                    <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 1em;">Submit</button>
+                    <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 0.75em;"><i class="fas fa-reply"></i>Submit</button>
                 </li>
             </ul>
         </div>

@@ -18,6 +18,22 @@ var vm = new Vue({
                 .then(json => {
                     this.currentAuthor = json;
                 });
+        },
+        addFriend: function() {
+            const url = `${this.profileAuthor.host}/api/friendrequest`;
+
+            let postBody = {
+                "query": "friendrequest",
+                "author": this.currentAuthor,
+                "friend": this.profileAuthor
+            }
+
+            console.log(postBody);
+
+            postJson(url, postBody).then(
+                (json) => {
+                    console.log(json);
+                });
         }
     },
     // runs when the vue app is created
