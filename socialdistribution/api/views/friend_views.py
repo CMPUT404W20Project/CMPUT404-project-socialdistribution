@@ -1,23 +1,12 @@
 from django.http import JsonResponse
-from django.core.paginator import Paginator
 
 from ..decorators import check_auth
 
 from urllib import parse
 from profiles.models import Author, AuthorFriend
-from posts.models import Post, Comment
 from profiles.utils import get_friend_urls_of_author
 from ..utils import (
-    post_to_dict,
-    comment_to_dict,
-    author_to_dict,
-    is_valid_post,
-    insert_post,
-    update_post,
-    is_valid_comment,
-    insert_comment,
     validate_friend_request,
-    author_can_see_post,
     validate_author_friends_post_query,
 )
 
@@ -26,6 +15,7 @@ import json
 
 @check_auth
 def author_friends(request, author_uuid):
+
     # this view only accepts GET, and POSTS,
     # 405 Method Not Allowed for other methods
     if request.method != "GET" and request.method != "POST":
@@ -156,6 +146,7 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
 def friend_request(request):
     if request.method == "POST":
         # ensure user is authenticated
+        # May need to remove
         if request.user.is_anonymous:
             response_body = {
                 "query": "friendrequest",
@@ -178,19 +169,25 @@ def friend_request(request):
             }
             return JsonResponse(response_body, status=status)
 
-        author = Author.objects.get(id=request_body["author"]["id"])
-        friend = Author.objects.get(id=request_body["friend"]["id"])
+        # In this case, the id is the URL
+        author_url = request_body["author"]["id"]
+        friend_url = request_body["friend"]["id"]
+
+        # This part needs to be handled better to ensure that one author is
+        # part of our database
+        # author = Author.objects.get(id=)
+        # friend = Author.objects.get(id=request_body["friend"]["id"])
 
         # make sure authenticated user is the one sending the friend request
-        if author != request.user:
-            response_body = {
-                "query": "friendrequest",
-                "success": False,
-                "message": "Cannot send a friend request for somebody else",
-            }
-            return JsonResponse(response_body, status=403)
+        # if author != request.user:
+        #     response_body = {
+        #         "query": "friendrequest",
+        #         "success": False,
+        #         "message": "Cannot send a friend request for somebody else",
+        #     }
+        #     return JsonResponse(response_body, status=403)
 
-        friend_req = AuthorFriend(author=author.url, friend=friend.url)
+        friend_req = AuthorFriend(author=author_url, friend=friend_url)
 
         friend_req.save()
 
