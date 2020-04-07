@@ -26,7 +26,6 @@ from .utils import (
 import json
 
 
-@csrf_exempt
 @check_auth
 def posts(request):
     # get public posts
@@ -70,7 +69,7 @@ def posts(request):
             return JsonResponse(response_body, status=404)
 
         # get the page
-        # note: the off-by-ones here are because Paginator is 1-indexed 
+        # note: the off-by-ones here are because Paginator is 1-indexed
         # and the example article responses are 0-indexed
         page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -190,7 +189,6 @@ def posts(request):
 
 
 @check_auth
-@csrf_exempt
 def single_post(request, post_id):
     posts = Post.objects.filter(id=post_id)
 
@@ -290,7 +288,6 @@ def single_post(request, post_id):
 
 
 @check_auth
-@csrf_exempt
 def specific_author_posts(request, author_id):
     # this view only accepts GET, 405 Method Not Allowed for other methods
     if request.method != "GET":
@@ -355,7 +352,7 @@ def specific_author_posts(request, author_id):
         return JsonResponse(response_body, status=404)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -381,7 +378,6 @@ def specific_author_posts(request, author_id):
 
 
 @check_auth
-@csrf_exempt
 def author_posts(request):
     # this view only accepts GET, 405 Method Not Allowed for other methods
     if request.method != "GET":
@@ -434,7 +430,7 @@ def author_posts(request):
         return JsonResponse(response_body, status=404)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -460,7 +456,6 @@ def author_posts(request):
 
 
 @check_auth
-@csrf_exempt
 def post_comments(request, post_id):
     # get the post
     posts = Post.objects.filter(id=post_id)
@@ -525,7 +520,7 @@ def post_comments(request, post_id):
             return JsonResponse(response_body, status=404)
 
         # get the page
-        # note: the off-by-ones here are because Paginator is 1-indexed 
+        # note: the off-by-ones here are because Paginator is 1-indexed
         # and the example article responses are 0-indexed
         page_obj = paginator.page(str(int(page_number) + 1))
 
@@ -534,7 +529,7 @@ def post_comments(request, post_id):
             "query": "comments",
             "count": paginator.count,
             "size": int(page_size),
-            "posts": [comment_to_dict(comment) for comment in page_obj],
+            "comments": [comment_to_dict(comment) for comment in page_obj],
         }
 
         # give a url to the next page if it exists
@@ -611,7 +606,6 @@ def post_comments(request, post_id):
     return JsonResponse(response_body, status=405)
 
 
-@csrf_exempt
 @check_auth
 def author_friends(request, author_uuid):
     # this view only accepts GET, and POSTS,
@@ -696,7 +690,6 @@ def author_friends(request, author_uuid):
 
 
 @check_auth
-@csrf_exempt
 def author_friends_with_author(request, author_uuid, author_friend_url):
     # this view only accepts GET,
     # 405 Method Not Allowed for other methods
@@ -749,7 +742,6 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
 
 
 @check_auth
-@csrf_exempt
 def friend_request(request):
     if request.method == "POST":
         # ensure user is authenticated
@@ -807,7 +799,6 @@ def friend_request(request):
 
 
 @check_auth
-@csrf_exempt
 def author_profile(request, author_id):
     if request.method == "GET":
         authors = Author.objects.filter(id=author_id)
@@ -824,6 +815,7 @@ def author_profile(request, author_id):
         author = authors[0]
 
         response_body = author_to_dict(author)
+        response_body["id"] = author_to_dict(author)["url"]
 
         response_body["friends"] = [
             author_to_dict(friend.friend) for friend in getFriendsOfAuthor(author)
@@ -840,7 +832,6 @@ def author_profile(request, author_id):
 
 
 @check_auth
-@csrf_exempt
 def who_am_i(request):
     response_body = {"query": "whoami", "success": True}
 
@@ -853,7 +844,6 @@ def who_am_i(request):
 
 
 @check_auth
-@csrf_exempt
 def can_see(request, author_id, post_id):
     author = Author.objects.get(id=author_id)
     post = Post.objects.get(id=post_id)
