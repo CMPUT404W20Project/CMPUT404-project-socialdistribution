@@ -51,4 +51,9 @@ urlpatterns = [
         "cansee/<uuid:author_id>/<uuid:post_id>",
         csrf_exempt(views.can_see),
         name="api_can_see"),
+    path(
+        "author/github",
+        csrf_exempt(views.github_posts),
+        name= "api_get_author_github_posts"
+    )
 ]

@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 
 from .decorators import check_auth
+import requests
 
 from urllib import parse
 from profiles.models import Author, AuthorFriend
@@ -830,6 +831,80 @@ def author_profile(request, author_id):
     }
     return JsonResponse(response_body, status=405)
 
+@check_auth
+def github_posts(request):
+    if request.method == "GET":
+        author = request.user
+
+        # get the github activities of the author
+        github_name = author.github
+        # if user doesn't have a github account, return 404
+        if github_name == '':
+            response_body = {
+                "query": "github_posts",
+                "success": False,
+                "message": "The author isn't linked to a github account",
+            }
+            return JsonResponse(response_body, status=404)
+
+        github_name = author.github.split("/")[3]
+        github_name = github_name.lower();
+        github_url = 'https://api.github.com/users/' + github_name + '/events'
+        r = requests.get(url = github_url)
+
+        # if the github api doesn't return 200,
+        # then return whatever the github api endpoint returns
+        if r.status_code != 200:
+            response_body = {
+                "query": "github_posts",
+                "success": False,
+                "message": "Can't retrieve the author's github activities",
+            }
+            return JsonResponse(response_body, status=r.status_code)
+
+        github_activities = r.json()
+        for activity in github_activities:
+
+            git_id = activity['id']
+            existing_post = Post.objects.filter(author=author, description=git_id).exists()
+
+            if not existing_post:
+                title = activity['type']
+                published = activity['created_at']
+                type = activity['type']
+                repo_name = activity['repo']['name']
+                payload = activity['payload']
+
+                content = "["+ repo_name +"](https://github.com/"+ repo_name + ") \r\n "
+                if type == 'PullRequestEvent':
+                    content += payload['pull_request']['body']
+                elif type == 'PushEvent':
+                    for i in range(payload['size']):
+                        content += "["+ payload['commits'][i]['message'].replace('\n\n', ' ') +"]("+ payload['commits'][i]['url'] + ") \r\n "
+                elif type == 'PullRequestReviewCommentEvent':
+                    content += payload['comment']['body']
+                elif type == 'IssueCommentEvent':
+                    content += "[Detail]("+ payload['comment']['html_url'] + ")"
+                elif type == 'IssuesEvent':
+                    content += "["+ payload['issue']['title'] +"]("+ payload['issue']['html_url'] + ")"
+
+                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/plain')
+                github_post.save()
+
+        response_body = {
+            "query": "github_posts",
+            "success": True,
+            "message": "Github activities loaded",
+        }
+        return JsonResponse(response_body)
+
+    response_body = {
+        "query": "github_posts",
+        "success": False,
+        "message": f"Invalid method: {request.method}",
+    }
+
+    return JsonResponse(response_body, status=405)
 
 @check_auth
 def who_am_i(request):
