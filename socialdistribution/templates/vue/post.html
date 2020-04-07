@@ -1,0 +1,57 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+<!--POST-->
+<div class="container" id="post">
+    <input type="hidden" id="post-id" name="post-id" value="{{ post_id }}">
+
+    <!-- this means Django won't render this part -->
+    {% verbatim %}
+    <div v-if="post">
+        <div class="card post-card">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.title }}</h5>
+                <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
+                <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
+
+                <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                <span v-else-if="post.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
+                <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
+                <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
+
+                <!-- <button type="button" v-on:click="alert('Implement this')" class="btn btn-secondary"v-if="post.author.id == currentAuthor.id">Edit</button> -->
+
+                <!-- TODO url vs id -->
+                <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.url == currentAuthor.id"><i class="fas fa-trash-alt"></i>Delete</button>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item" v-for="comment in post.comments">
+                    <div style="padding-left: 3em;">
+                        <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
+                        <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
+
+                        <p v-if="comment.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
+                        <span v-else-if="comment.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(comment.comment)" style="padding-top: 1em;"></span>
+                        <div v-else-if="comment.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${comment.comment}`" alt="Image"></div>
+                        <div v-else-if="comment.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${comment.comment}`" alt="Image"></div>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <label for="exampleFormControlTextarea1">Enter a comment:</label>
+                    <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
+                    <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 0.75em;"><i class="fas fa-reply"></i>Submit</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    {% endverbatim %}
+</div>
+
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'css/vue/post.css' %}">
+
+<!-- JS -->
+<script defer type="text/javascript" src="{% static 'js/vue/post.js' %}"></script>
+
+{% endblock content %}

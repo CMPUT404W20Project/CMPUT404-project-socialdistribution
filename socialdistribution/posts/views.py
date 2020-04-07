@@ -61,29 +61,37 @@ def view_post(request, post_id):
     if (not author_can_see_post(author, post)):
         return render(request, "403.html")
 
-    template = 'posts/posts_view.html'
-    comments = Comment.objects.filter(post=post).order_by('published')
-
-    if request.method == 'POST':
-        comment_form = CommentForm(request.POST or None)
-        if comment_form.is_valid():
-            content = request.POST.get('comment')
-            comment = Comment.objects.create(post=post, author=author,
-                                             comment=content)
-            comment.save()
-            return HttpResponseRedirect(request.path_info)
-        # What should we do if the form is invalid?
-    else:
-        comment_form = CommentForm()
+    template = 'vue/post.html'
 
     context = {
-        'author': author,
-        'post': post,
-        'comments': comments,
-        'comment_form': comment_form,
+        'post_id': post_id
     }
 
     return render(request, template, context)
+
+    # template = 'posts/posts_view.html'
+    # comments = Comment.objects.filter(post=post).order_by('published')
+
+    # if request.method == 'POST':
+    #     comment_form = CommentForm(request.POST or None)
+    #     if comment_form.is_valid():
+    #         content = request.POST.get('comment')
+    #         comment = Comment.objects.create(post=post, author=author,
+    #                                          comment=content)
+    #         comment.save()
+    #         return HttpResponseRedirect(request.path_info)
+    #     # What should we do if the form is invalid?
+    # else:
+    #     comment_form = CommentForm()
+
+    # context = {
+    #     'author': author,
+    #     'post': post,
+    #     'comments': comments,
+    #     'comment_form': comment_form,
+    # }
+
+    # return render(request, template, context)
 
 @login_required
 def edit_post(request, post_id):
