@@ -85,7 +85,7 @@ def edit_post(request, post_id):
     post = Post.objects.get(id=post_id)
     friendList = getFriendsOfAuthor(author)
 
-    if (author != post.author):
+    if author != post.author or post.description != '':
         return render(request, "403.html")
 
     form = PostForm(request.POST or None, request.FILES or None,

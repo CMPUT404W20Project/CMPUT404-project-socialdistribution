@@ -7,6 +7,9 @@
 <!-- https://www.w3schools.com/howto/howto_js_filter_elements.asp -->
 <!-- Control buttons -->
 <div class="post-back">
+<div id="load_github">
+  <button class="btn btn-danger" id="load_github"> Load my github activities</button>
+</div>
 <div id="myBtnContainer">
     <button class="btn btn-default" id="all"> Show all</button>
     <button class="btn btn-default" id="local"> Local</button>
@@ -20,7 +23,11 @@
 <ul id="my-stream">
 {% if latest_post_list %}
     {% for post in latest_post_list %}
+    {% if post.description == '' %}
     <div class="post-card" id="non-github-post" name="{{ post.visibility }}">
+    {% else %}
+    <div class="post-card" id="github-post">
+    {% endif %}
         <!--start of the post heading-->
         <div class="post-heading">
             <div class="post-author" id="{{ post.author.id }}">
@@ -47,7 +54,7 @@
             {% elif post.contentType == "text/markdown" %}
             <p class="post-card-text">{{ post.content|markdownify }}</p>
             {% else %}
-            <p class="post-card-text">{{ post.content }}</p>
+            <p class="post-card-text">{{ post.content | safe }}</p>
             {% endif %}
             {% if post.categories %}
             {% for category in post.categories %}
@@ -59,7 +66,9 @@
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
-            {% if post.visibility == "PUBLIC" %}
+            {% if post.description != "" %}
+            <span class="label label-danger" style="float:left;">GITHUB</span>
+            {% elif post.visibility == "PUBLIC" %}
             <span class="label label-default" style="float:left;">{{ post.visibility }}</span>
             {% elif post.visibility == "PRIVATE" %}
             <span class="label label-success" style="float:left;">{{ post.visibility }}</span>

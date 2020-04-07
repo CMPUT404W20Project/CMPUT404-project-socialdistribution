@@ -4,6 +4,7 @@ from django.core.paginator import Paginator
 from django.urls import reverse
 
 from .decorators import check_auth
+import requests
 
 from urllib import parse
 from profiles.models import Author, AuthorFriend
@@ -830,6 +831,69 @@ def author_profile(request, author_id):
     }
     return JsonResponse(response_body, status=405)
 
+@check_auth
+def github_posts(request, author_id):
+    if request.method == "GET":
+        author = Author.objects.get(id=author_id)
+
+        # get the github activities of the author
+        github_name = author.github.split("/")[3]
+        github_name = github_name.lower();
+        github_url = 'https://api.github.com/users/' + github_name + '/events'
+        r = requests.get(url = github_url)
+
+        if r.status_code != 200:
+            response_body = {
+                "query": "github_posts",
+                "success": False,
+                "message": "Can't retrieve the author's github activities",
+            }
+            return JsonResponse(response_body, status=r.status_code)
+
+        github_activities = r.json()
+        for activity in github_activities:
+
+            git_id = activity['id']
+            existing_post = Post.objects.filter(author=author, description=git_id).exists()
+            print(git_id)
+            if not existing_post:
+                title = activity['type']
+                published = activity['created_at']
+                type = activity['type']
+                repo_name = activity['repo']['name']
+                payload = activity['payload']
+
+                content = "<a class=\"post-card-text\" href=\"https://github.com/"+ repo_name + "\">"+ repo_name +"</a>"
+                if type == 'PullRequestEvent':
+                    content += "<p>"+ payload['pull_request']['body'] +"</p>"
+                elif type == 'PushEvent':
+                    for i in range(payload['size']):
+                        content += "<p><a href=\""+ payload['commits'][i]['url'] +"\">"+ payload['commits'][i]['message']+ "</a></p>"
+                elif type == 'PullRequestReviewCommentEvent':
+                    content += "<p>"+ payload['comment']['body'] +"</p>"
+                elif type == 'IssueCommentEvent':
+                    content += "<p><a href=\""+ payload['comment']['html_url'] +"\">detail</a></p>"
+                elif type == 'IssuesEvent':
+                    content += "<p><a href=\""+ payload['issue']['html_url'] +"\">"+ payload['issue']['title']+ "</a></p>"
+
+                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/plain')
+
+                github_post.save()
+
+        response_body = {
+            "query": "github_posts",
+            "success": True,
+            "message": "Github activities loaded",
+        }
+        return JsonResponse(response_body)
+
+    response_body = {
+        "query": "github_posts",
+        "success": False,
+        "message": f"Invalid method: {request.method}",
+    }
+
+    return JsonResponse(response_body, status=405)
 
 @check_auth
 def who_am_i(request):

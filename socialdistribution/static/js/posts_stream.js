@@ -1,86 +1,100 @@
 /**
  * Displays the Github activities of the user
- * 
+ *
  * Append all Githb events at the bottom of all posts in the /stream
- * 
+ *
  */
-var markup = '<div class="post-card" id="github-post">\
-<!--start of the post heading-->\
-<div class="post-heading">\
-    <div class="post-author">\
-        <div class="post-author-img">\
-            <img src="${event.actor.avatar_url}"  alt="">\
-        </div>\
-        <div class="post-author-body">\
-            <p class="post-author-name">${event.type}</p>\
-            <p >${event.actor.display_login}</p>\
-            <p class="post-timestamp" data-date="${event.created_at}">${event.created_at}</p>\
-        </div>\
-    </div>\
-</div>\
-<!--end of the post heading-->\
-<!--start of the post item-->\
-<div class="post-item">\
-    <a class="post-card-text" href="https://github.com/${event.repo.name}">${event.repo.name}</a>\
-    {{if event.type == "PullRequestEvent"}}\
-    <p>${event.payload.pull_request.body}</p>\
-    {{else event.type == "PullRequestReviewCommentEvent" }}\
-    <p>${event.payload.comment.body}</p>\
-    {{else event.type == "IssueCommentEvent" }}\
-    <p><a href="${event.payload.comment.html_url}">detail</a></p>\
-    {{else event.type == "IssuesEvent" }}\
-    <p><a href="${event.payload.issue.html_url}">${event.payload.issue.title}</a></p>\
-    {{/if}}\
-</div>\
-<!--end of the post item-->\
-<!--start of the post base-->\
-        <div class="post-base">\
-            <span class="label label-danger" style="float:left;">GITHUB</span>\
-        </div>\
-<!--end of the post base-->'
+// var markup = '<div class="post-card" id="github-post">\
+// <!--start of the post heading-->\
+// <div class="post-heading">\
+//     <div class="post-author">\
+//         <div class="post-author-img">\
+//             <img src="${event.actor.avatar_url}"  alt="">\
+//         </div>\
+//         <div class="post-author-body">\
+//             <p class="post-author-name">${event.type}</p>\
+//             <p >${event.actor.display_login}</p>\
+//             <p class="post-timestamp" data-date="${event.created_at}">${event.created_at}</p>\
+//         </div>\
+//     </div>\
+// </div>\
+// <!--end of the post heading-->\
+// <!--start of the post item-->\
+// <div class="post-item">\
+//     <a class="post-card-text" href="https://github.com/${event.repo.name}">${event.repo.name}</a>\
+//     {{if event.type == "PullRequestEvent"}}\
+//     <p>${event.payload.pull_request.body}</p>\
+//     {{else event.type == "PullRequestReviewCommentEvent" }}\
+//     <p>${event.payload.comment.body}</p>\
+//     {{else event.type == "IssueCommentEvent" }}\
+//     <p><a href="${event.payload.comment.html_url}">detail</a></p>\
+//     {{else event.type == "IssuesEvent" }}\
+//     <p><a href="${event.payload.issue.html_url}">${event.payload.issue.title}</a></p>\
+//     {{/if}}\
+// </div>\
+// <!--end of the post item-->\
+// <!--start of the post base-->\
+//         <div class="post-base">\
+//             <span class="label label-danger" style="float:left;">GITHUB</span>\
+//         </div>\
+// <!--end of the post base-->'
 
 
 $(document).ready(function() {
-    var authorId = $(".profile-header-info").attr("id");
-    var githubName;
-    $.template( "githubTemplate", markup );
+  var authorId = $(".profile-header-info").attr("id");
 
-    /**
-     * Get the Github Account of the authenticated user,
-     * and then make a Github API event request to get all the events
-     * from the Github.
-     */
+  $("#load_github").click(function(){
     $.ajax({
-        url: '/api/author/' + authorId,
-        method: 'GET',
-        success: function(result) {
-            githubName = result.github.split("/")[3];
-            githubName = githubName.toLowerCase();
-        },
-        error: function(request,msg,error) {
-            console.log('fail to get user github');
-        }
-    }).done(function() {
-        $.ajax({
-            url: 'https://api.github.com/users/' + githubName + '/events',
-            method: 'GET',
-            success: function(events) {
-                for (event of events) {
-                    // console.log(event);
-                    // console.log(event.created_at);
-                    // console.log($(template_author).ready());
-                    $.tmpl( "githubTemplate", event ).appendTo("#my-stream" );
-                };
-            },
-            error: function(request,msg,error) {
-                console.log('fail to get the the github stream');
-            }
-        });  
-    }); 
+      url: '/api/author/' + authorId +'/github',
+      method: 'GET',
+      success: function(result) {
+        location.replace(location.origin + '/stream');
+      },
+      error: function(request,msg,error) {
+          alert("Can't load your github activities");
+      }
+    });
+  });
+
+    // var githubName;
+    // $.template( "githubTemplate", markup );
+    //
+    // /**
+    //  * Get the Github Account of the authenticated user,
+    //  * and then make a Github API event request to get all the events
+    //  * from the Github.
+    //  */
+    // $.ajax({
+    //     url: '/api/author/' + authorId,
+    //     method: 'GET',
+    //     success: function(result) {
+    //         githubName = result.github.split("/")[3];
+    //         githubName = githubName.toLowerCase();
+    //     },
+    //     error: function(request,msg,error) {
+    //         console.log('fail to get user github');
+    //     }
+    // }).done(function() {
+    //     $.ajax({
+    //         url: 'https://api.github.com/users/' + githubName + '/events',
+    //         method: 'GET',
+    //         success: function(events) {
+    //             for (event of events) {
+    //                 // console.log(event);
+    //                 // console.log(event.created_at);
+    //                 // console.log($(template_author).ready());
+    //                 $.tmpl( "githubTemplate", event ).appendTo("#my-stream" );
+    //             };
+    //         },
+    //         error: function(request,msg,error) {
+    //             console.log('fail to get the the github stream');
+    //         }
+    //     });
+    // });
 
     /**
      * Handle the filter for the post
-     * 
+     *
      * Show all: Show all the posts.
      * Local: Show the local posts.
      * Remote: Show the remote posts.
@@ -164,7 +178,7 @@ $(document).ready(function() {
         setTimeout(function() {
             var board = $("#my-stream");
             var boards = board.children('.post-card').detach().get();
-        
+
             boards.sort(function(a, b) {
             console.log($(a).find(".post-timestamp").data("date"));
             return new Date($(a).find(".post-timestamp").data("date")) - new Date($(b).find(".post-timestamp").data("date"));

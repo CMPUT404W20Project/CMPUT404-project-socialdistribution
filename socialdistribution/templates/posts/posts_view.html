@@ -24,7 +24,7 @@
             </div>
             <div class="buttons-wrap">
               <button class="btn btn-danger" id="delete-post" style="margin-bottom: 2pt;"><span class="glyphicon glyphicon-trash"></span> Delete</button>
-              {% if author == post.author %}
+              {% if author == post.author and post.description == '' %}
               <a class="btn btn-primary" href="/stream/{{ post.id }}/edit"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
               {% endif %}
             </div>
@@ -38,7 +38,7 @@
             {% elif post.contentType == "text/markdown" %}
             <p class="post-card-text">{{ post.content|markdownify }}</p>
             {% else %}
-            <p class="post-card-text">{{ post.content }}</p>
+            <p class="post-card-text">{{ post.content | safe }}</p>
             {% endif %}
             {% if post.categories %}
             {% for category in post.categories_as_list %}
@@ -49,7 +49,9 @@
         <!--end of the post item-->
         <!--start of the post base-->
         <div class="post-base">
-            {% if post.visibility == "PUBLIC" %}
+            {% if post.description != "" %}
+            <span class="label label-danger" style="float:left; margin-right: 3pt;">GITHUB</span>
+            {% elif post.visibility == "PUBLIC" %}
             <span class="label label-default" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
             {% elif post.visibility == "PRIVATE" %}
             <span class="label label-success" style="float:left; margin-right: 3pt;">{{ post.visibility }}</span>
