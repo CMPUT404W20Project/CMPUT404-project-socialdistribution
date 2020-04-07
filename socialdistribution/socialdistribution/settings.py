@@ -30,6 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+HOSTNAME = "http://127.0.0.1:8000/"
 AUTH_USER_MODEL = 'profiles.Author'
 # Application definition
 

@@ -6,7 +6,7 @@ from ..decorators import check_auth
 
 from profiles.models import Author
 from posts.models import Post
-from profiles.utils import getFriendsOfAuthor
+from profiles.utils import get_friend_profiles_of_author
 from ..utils import (
     post_to_dict,
     author_to_dict,
@@ -201,9 +201,8 @@ def author_profile(request, author_id):
         response_body = author_to_dict(author)
         response_body["id"] = author_to_dict(author)["url"]
 
-        response_body["friends"] = [
-            author_to_dict(friend.friend) for friend in getFriendsOfAuthor(author)
-        ]
+        # Might cause issues since these could be remote authors
+        response_body["friends"] = get_friend_profiles_of_author(author.url)
 
         return JsonResponse(response_body)
 

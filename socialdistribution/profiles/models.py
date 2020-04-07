@@ -1,20 +1,14 @@
 import uuid
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
-
-from django.db import models
-from django.contrib.auth.models import User
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from PIL import Image
+# from .utils import get_profile
+from socialdistribution.utils import get_host, get_url_part
 
 
 # Have to do this because in settings.py USER_AUTH_MODEL is set to Author.
-# Because of that, the admin page switches to requiring an email instead of user name.
+# Because of that, the admin page switches to requiring an email
+# instead of user name.
 class CustomUserManager(BaseUserManager):
     # Over riding create_superuser as otherwise the default implementation
     # doesn't work with the custom model.
@@ -75,6 +69,8 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
+        if self.host.strip()[-1] == "/":
+            return("%sauthor/%s" % (self.host, self.id))
         return("%s/author/%s" % (self.host, self.id))
 
     def __str__(self):
@@ -89,15 +85,27 @@ class Author(AbstractBaseUser, PermissionsMixin):
 
         return author
 
+
 # A model to store authors request to follow another author
 # If table contains (1,2) but not (2,1) then it is a request by 1 to befriend 2
 # If table contains (1,2) and (2,1) then 1 and 2 are friends and request was
 # accepted.
 class AuthorFriend(models.Model):
-    author = models.ForeignKey(Author, related_name="AuthorFriend_author",
-                               on_delete=models.CASCADE, null=True)
-    friend = models.ForeignKey(Author, related_name="AuthorFriend_friend",
-                               on_delete=models.CASCADE, null=True)
+
+    author = models.URLField(max_length=255)
+    friend = models.URLField(max_length=255)
+
+    def get_author_id(self):
+        return get_url_part(self.author, -1)
+
+    def get_friend_id(self):
+        return get_url_part(self.friend, -1)
+
+    def get_author_host(self):
+        return get_host(self.author)
+
+    def get_friend_host(self):
+        return get_host(self.friend)
 
     class Meta:
         unique_together = ('author', 'friend')

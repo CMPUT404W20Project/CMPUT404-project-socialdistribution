@@ -1,31 +1,19 @@
 import requests
-from urllib.parse import urljoin
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import Timeout
 from servers.models import Server
-
+from servers.utils import get_api_request_url
+from socialdistribution.utils import validate_instance
 
 PUBLIC_POSTS_ENDPOINT = "posts"
 CONNECTION_TIMEOUT_LIMIT = 10
 READ_TIMEOUT_LIMIT = 20
 
-AUTHOR_FIELDS = ["id", "host", "displayName", "url", "github"]
+AUTHOR_FIELDS = ["id", "host", "displayName", "url"]
 COMMENT_FIELDS = ["author", "comment", "contentType", "published", "id"]
 POST_FIELDS = ["title", "source", "origin", "description", "contentType",
                "author", "categories", "count", "size", "next", "comments",
                "published", "id", "visibility", "visibleTo", "unlisted"]
-
-
-
-def validate_instance(instance, fields, type):
-    if not isinstance(instance, dict):
-        print("instance not a dictionary")
-        return False
-    for field in fields:
-        if field not in instance:
-            print("%s not in %s" % (field, type))
-            return False
-    return True
 
 
 def validate_remote_post_response(post):
@@ -43,10 +31,6 @@ def validate_remote_post_response(post):
             return False
 
     return True
-
-
-def get_api_request_url(server_api, server_endpoint):
-    return urljoin(server_api, server_endpoint)
 
 
 def get_public_posts_from_remote_server(server):

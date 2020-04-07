@@ -6,7 +6,7 @@ from ..decorators import check_auth
 from urllib import parse
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
-from profiles.utils import getFriendsOfAuthor
+from profiles.utils import get_friend_urls_of_author
 from ..utils import (
     post_to_dict,
     comment_to_dict,
@@ -47,12 +47,9 @@ def author_friends(request, author_uuid):
         return JsonResponse(response_body, status=404)
 
     author = author[0]
-    author_friends = getFriendsOfAuthor(author)
 
     if request.method == "GET":
-        author_friends_urls = [
-            author_friend.friend.url for author_friend in author_friends
-        ]
+        author_friends_urls = get_friend_urls_of_author(author.url)
         response_body = {
             "query": "friends",
             "authors": author_friends_urls,
@@ -81,9 +78,8 @@ def author_friends(request, author_uuid):
             }
             return JsonResponse(response_body, status=400)
 
-        author_friends_urls = [
-            author_friend.friend.url for author_friend in author_friends
-        ]
+        author_friends_urls = get_friend_urls_of_author(author.url)
+
         request_body_authors = request_body['authors']
 
         response_body = {
@@ -130,13 +126,10 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
         return JsonResponse(response_body, status=404)
 
     author = author[0]
-    author_friends = getFriendsOfAuthor(author)
 
     if request.method == "GET":
         author_friend_url_cleaned = parse.unquote(author_friend_url)
-        author_friends_urls = [
-            author_friend.friend.url for author_friend in author_friends
-        ]
+        author_friends_urls = get_friend_urls_of_author(author.url)
         friends = False
         for url in author_friends_urls:
             if author_friend_url_cleaned in url:
@@ -197,7 +190,7 @@ def friend_request(request):
             }
             return JsonResponse(response_body, status=403)
 
-        friend_req = AuthorFriend(author=author, friend=friend)
+        friend_req = AuthorFriend(author=author.url, friend=friend.url)
 
         friend_req.save()
 

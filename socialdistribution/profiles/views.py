@@ -9,8 +9,8 @@ from posts.forms import PostForm
 from .forms import ProfileForm, ProfileSignup
 
 from .decorators import check_authentication
-from .utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
-                   getFriendRequestsFromAuthor
+from .utils import get_friend_profiles_of_author, get_friend_requests_to_author,\
+                   get_friend_requests_from_author
 
 from .models import AuthorFriend, Author
 import base64
@@ -40,7 +40,7 @@ def new_post(request):
     author = request.user
     template = 'posts/posts_form.html'
     form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
-    friendList = getFriendsOfAuthor(author)
+    friendList = get_friend_profiles_of_author(author.url)
 
     context = {
         'form': form,
@@ -151,7 +151,7 @@ def my_friends(request):
 
     author = request.user
     template = 'friends/friends_list.html'
-    friendList = getFriendsOfAuthor(author)
+    friendList = get_friend_profiles_of_author(author.url)
 
     context = {
         'author': author,
@@ -166,7 +166,7 @@ def my_friend_requests(request):
 
     author = request.user
     template = 'friends/friends_request.html'
-    friendRequestList = getFriendRequestsToAuthor(author)
+    friendRequestList = get_friend_requests_to_author(author.url)
     context = {
         'author': author,
         'friendRequestList': friendRequestList,
@@ -180,13 +180,11 @@ def my_friend_following(request):
 
     author = request.user
     template = 'friends/friends_follow.html'
-    friendFollowList = getFriendRequestsFromAuthor(author)
-    # friendRequestList = getFriendRequestsToAuthor(author)
+    friendFollowList = get_friend_requests_from_author(author.url)
 
     context = {
         'author': author,
         'friendFollowList': friendFollowList,
-        # 'friendRequestList': friendRequestList,
     }
 
     return render(request, template, context)
@@ -220,8 +218,8 @@ def accept_friend(request, friend_id_to_accept):
     author = request.user
     friend = Author.objects.get(pk=friend_id_to_accept)
 
-    if (friend and AuthorFriend.objects.filter(author=friend, friend=author)):
-        AuthorFriend.objects.get_or_create(author=author, friend=friend)
+    if (friend and AuthorFriend.objects.filter(author=friend.url, friend=author.url)):
+        AuthorFriend.objects.get_or_create(author=author.url, friend=friend.url)
     else:
         # invalid friend accept request
         pass
@@ -234,8 +232,8 @@ def reject_friend(request, friend_id_to_reject):
     author = request.user
     friend = Author.objects.get(pk=friend_id_to_reject)
 
-    if (friend and AuthorFriend.objects.filter(author=friend, friend=author)):
-        AuthorFriend.objects.filter(author=friend, friend=author).delete()
+    if (friend and AuthorFriend.objects.filter(author=friend.url, friend=author.url)):
+        AuthorFriend.objects.filter(author=friend.url, friend=author.url).delete()
     else:
         # invalid friend reject request
         pass

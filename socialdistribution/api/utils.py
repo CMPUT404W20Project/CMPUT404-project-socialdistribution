@@ -3,7 +3,7 @@ from django.core.paginator import Paginator
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
-from profiles.utils import getFriendsOfAuthor
+from profiles.utils import get_friend_urls_of_author
 from servers.models import Server
 
 from datetime import datetime
@@ -330,24 +330,20 @@ def author_can_see_post(author, post):
     if post.visibility == "SERVERONLY" and author.host == post.author.host:
         return True
     if post.visibility == "FRIENDS":
-        post_author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(post.author)
-        ]
+        post_author_friends = get_friend_urls_of_author(post.author.url)
+
         if author in post_author_friends:
             return True
     if post.visibility == "FOAF":
-        post_author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(post.author)
-        ]
-        if author in post_author_friends:
+        post_author_friends = get_friend_urls_of_author(post.author.url)
+        if author.url in post_author_friends:
             return True
 
-        author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(author)]
+        author_friends = get_friend_urls_of_author(author.url)
 
-        author_friend_ids = set([friend.id for friend in author_friends])
+        author_friend_ids = set(author_friends)
         post_author_friend_ids = set(
-            [friend.id for friend in post_author_friends])
+            [post_author_friends])
 
         if len(author_friend_ids & post_author_friend_ids) > 0:
             return True
