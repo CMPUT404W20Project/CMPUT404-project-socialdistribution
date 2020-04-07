@@ -54,7 +54,7 @@
                 <li class="list-group-item">
                     <label for="exampleFormControlTextarea1">Enter a comment:</label>
                     <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
-                    <button type="button" v-on:click="commentOnPost(post.id)" class="btn btn-primary" style="margin-top: 1em;">Submit</button>
+                    <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 1em;">Submit</button>
                 </li>
             </ul>
         </div>

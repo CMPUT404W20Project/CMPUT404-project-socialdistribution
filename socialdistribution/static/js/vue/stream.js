@@ -81,10 +81,10 @@ var vm = new Vue({
                 this.getPosts();
             });
         },
-        commentOnPost: function(postId) {
-            const url = `/api/posts/${postId}/comments`;
+        commentOnPost: function(post) {
+            const url = `${post.origin}/api/posts/${post.id}/comments`;
 
-            let commentInputId = `#comment-${postId}`;
+            let commentInputId = `#comment-${post.id}`;
             // get comment text
             let commentText = document.querySelector(commentInputId).value;
             // clear textarea
@@ -92,7 +92,7 @@ var vm = new Vue({
             // the actual comment
             let comment = {
                 "query": "addComment",
-                "post": postId,
+                "post": post.id,
                 "comment": {
                     "author": this.currentAuthor,
                     "comment": commentText,
