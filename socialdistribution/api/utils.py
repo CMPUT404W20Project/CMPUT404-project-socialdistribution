@@ -24,8 +24,8 @@ def post_to_dict(post, request):
 
     post_dict = {
         "title": post.title,
-        "source": "POST HAS NO ATTRIBUTE SOURCE",
-        "origin": "POST HAS NO ATTRIBUTE ORIGIN",
+        "source": post.source,
+        "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
         "content": post.content,
