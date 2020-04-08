@@ -8,6 +8,10 @@
     padding-bottom: 1em;
 }
 
+#post-content {
+  white-space: pre-wrap;
+}
+
 html {
     position: relative;
     min-height: 100%;

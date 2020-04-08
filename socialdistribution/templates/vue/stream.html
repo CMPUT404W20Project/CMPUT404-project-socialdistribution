@@ -36,7 +36,7 @@
                 <a v-bind:href="urlForAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
                 <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
 
-                <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                <p v-if="post.contentType === 'text/plain'" class="card-text" id="post-content" style="padding-top: 1em;">{{ post.content }}</p>
                 <span v-else-if="post.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
                 <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
                 <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
