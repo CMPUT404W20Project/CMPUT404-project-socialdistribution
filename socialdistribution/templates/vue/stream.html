@@ -7,7 +7,7 @@
 
     <!-- this means Django won't render this part -->
     {% verbatim %}
-    <div class="card post-card">
+    <!-- <div class="card post-card">
         <div class="card-body">
             <h3 class="card-title">Filters (NOT YET IMPLEMENTED)</h3>
             <div>
@@ -18,7 +18,7 @@
                 <button type="button" style="margin-right: 0.25em;" class="btn" v-bind:class="[filterCategories.has(category) ? 'btn-primary' : 'btn-secondary']" v-on:click="toggleCategory(category)" v-for="category in postCategories">{{ category }}<span style="margin-left: 0.75em;" class="badge badge-light">4</span></button>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- create one of these divs for each post in data.posts -->
     <div v-for="post in posts">
