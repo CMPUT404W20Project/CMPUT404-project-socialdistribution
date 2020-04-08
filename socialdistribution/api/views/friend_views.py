@@ -8,8 +8,10 @@ from profiles.utils import get_friend_urls_of_author
 from ..utils import (
     validate_friend_request,
     validate_author_friends_post_query,
+    is_server_request
 )
 
+from socialdistribution.utils import get_url_part
 import json
 
 
@@ -145,15 +147,6 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
 @check_auth
 def friend_request(request):
     if request.method == "POST":
-        # ensure user is authenticated
-        # May need to remove
-        if request.user.is_anonymous:
-            response_body = {
-                "query": "friendrequest",
-                "success": False,
-                "message": "Must be authenticated to send a friend request",
-            }
-            return JsonResponse(response_body, status=403)
 
         request_body = json.loads(request.body)
 
@@ -170,24 +163,35 @@ def friend_request(request):
             return JsonResponse(response_body, status=status)
 
         # In this case, the id is the URL
-        author_url = request_body["author"]["id"]
-        friend_url = request_body["friend"]["id"]
+        sender_url = request_body["author"]["id"]
+        receiver_url = request_body["friend"]["id"]
 
-        # This part needs to be handled better to ensure that one author is
-        # part of our database
-        # author = Author.objects.get(id=)
-        # friend = Author.objects.get(id=request_body["friend"]["id"])
+        receiver_id = get_url_part(receiver_url, -1)
 
-        # make sure authenticated user is the one sending the friend request
-        # if author != request.user:
-        #     response_body = {
-        #         "query": "friendrequest",
-        #         "success": False,
-        #         "message": "Cannot send a friend request for somebody else",
-        #     }
-        #     return JsonResponse(response_body, status=403)
+        if not Author.objects.filter(id=receiver_id).count():
+            # ensure receiving author exists on server
+            response_body = {
+                "query": "friendrequest",
+                "success": False,
+                "message": "Author does not exist",
+            }
+            return JsonResponse(response_body, status=404)
 
-        friend_req = AuthorFriend(author=author_url, friend=friend_url)
+        # Only the author logged in can make a request for
+        # themselves, and no one else
+
+        if not is_server_request(request) and request.user.url != sender_url:
+            response_body = {
+                "query": "friendrequest",
+                "success": False,
+                "message": "Cannot make a request for another author",
+            }
+            return JsonResponse(response_body, status=403)
+
+        # Need to add check that we can only add friends if
+        # we have server credentials of remote authors
+
+        friend_req = AuthorFriend(author=sender_url, friend=receiver_url)
 
         friend_req.save()
 
