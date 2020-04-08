@@ -3,6 +3,8 @@ from socialdistribution.settings import HOSTNAME
 
 def get_url_part(url, index):
     try:
+        if url[-1] == "/":
+            url = url[:-1]
         part = url.split("/")[int(index)]
         return part
     except IndexError:
@@ -16,6 +18,8 @@ def get_hostname():
 
 def get_host(url):
     try:
+        if url[-1] == "/":
+            url = url[:-1]
         parsed_url = url.split("/")
         scheme = parsed_url[0]
         host = parsed_url[2]
