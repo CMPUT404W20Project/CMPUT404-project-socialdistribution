@@ -100,7 +100,7 @@ def get_local_posts():
     for post in local_posts:
         local_posts_list.append(post_to_dict(post))
 
-    return post
+    return local_posts_list
 
 
 def get_remote_posts():

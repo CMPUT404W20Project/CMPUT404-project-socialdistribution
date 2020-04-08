@@ -135,7 +135,7 @@ def view_author_profile(request, author_id):
     form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
 
     editable = (author.id == request.user.id)
-    
+
     if request.method == 'POST':
         if form.is_valid():
             form.save()
@@ -174,10 +174,10 @@ def view_author_profile(request, author_id):
 
 def register(request):
     template = "login/register.html"
-    
+
     if request.method == "POST":
         form = ProfileSignup(request.POST)
-       
+
         if form.is_valid():
             print("...form is valid!")
             #Manually get host and format it.
@@ -188,7 +188,7 @@ def register(request):
             instance = form.save(commit=False)
             #Manually change host to that of the server.
 
-            instance.host = domain
+            #instance.host = domain
             #Save author object to database.
             instance.save()
 
