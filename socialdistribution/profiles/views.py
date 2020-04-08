@@ -216,14 +216,11 @@ def my_friends(request):
     # template = 'vue/friends_list.html'
     template = 'friends/friends_list.html'
     requests_url = get_friend_urls_of_author(author.url)
-    print(requests_url)
     friendList = []
 
     for friend_url in requests_url:
-        print(friend_url)
         friendList.append(get_profile(friend_url))
 
-    print(friendList)
     context = {
         'author': author,
         'friendList': friendList,
