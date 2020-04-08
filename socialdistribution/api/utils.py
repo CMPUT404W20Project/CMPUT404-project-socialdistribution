@@ -22,8 +22,6 @@ def post_to_dict(post, request):
     # and the example article responses are 0-indexed
     page_obj = paginator.page("1")
 
-    print(post.categories)
-
     post_dict = {
         "title": post.title,
         "source": post.source,
