@@ -4,13 +4,14 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from profiles.utils import get_profile
 
 from posts.forms import PostForm
 from .forms import ProfileForm, ProfileSignup
 
 from .decorators import check_authentication
 from .utils import get_friend_profiles_of_author, get_friend_requests_to_author,\
-                   get_friend_requests_from_author
+                   get_friend_requests_from_author, get_friend_urls_of_author
 
 from .models import AuthorFriend, Author
 import base64
@@ -214,8 +215,15 @@ def my_friends(request):
     author = request.user
     # template = 'vue/friends_list.html'
     template = 'friends/friends_list.html'
-    friendList = get_friend_profiles_of_author(author.url)
+    requests_url = get_friend_urls_of_author(author.url)
+    print(requests_url)
+    friendList = []
 
+    for friend_url in requests_url:
+        print(friend_url)
+        friendList.append(get_profile(friend_url))
+
+    print(friendList)
     context = {
         'author': author,
         'friendList': friendList,
@@ -230,7 +238,12 @@ def my_friend_requests(request):
     author = request.user
     # template = 'vue/friends_request.html'
     template = 'friends/friends_request.html'
-    friendRequestList = get_friend_requests_to_author(author.url)
+
+    requests_url = get_friend_requests_to_author(author.url)
+    friendRequestList = []
+
+    for friend_url in requests_url:
+        friendRequestList.append(get_profile(friend_url))
     context = {
         'author': author,
         'friendRequestList': friendRequestList,
@@ -279,13 +292,18 @@ def search_friends(request):
 
 
 @login_required
-def accept_friend(request, friend_id_to_accept):
+def accept_friend(request, friend_url):
 
     author = request.user
-    friend = Author.objects.get(pk=friend_id_to_accept)
 
-    if (friend and AuthorFriend.objects.filter(author=friend.url, friend=author.url)):
-        AuthorFriend.objects.get_or_create(author=author.url, friend=friend.url)
+    if friend_url[-1] == "/":
+        friend_url = friend_url[:-1]
+
+    friend_id = friend_url.split("/")[-1]
+    friend = Author.objects.get(pk=friend_id)
+
+    if (friend and AuthorFriend.objects.filter(author=friend_url, friend=author.url)):
+        AuthorFriend.objects.get_or_create(author=author.url, friend=friend_url)
     else:
         # invalid friend accept request
         pass
@@ -293,13 +311,16 @@ def accept_friend(request, friend_id_to_accept):
 
 
 @login_required
-def reject_friend(request, friend_id_to_reject):
+def reject_friend(request, friend_url):
 
     author = request.user
-    friend = Author.objects.get(pk=friend_id_to_reject)
+    if friend_url[-1] == "/":
+        friend_url = friend_url[:-1]
+    friend_id = friend_url.split("/")[-1]
+    friend = Author.objects.get(pk=friend_id)
 
-    if (friend and AuthorFriend.objects.filter(author=friend.url, friend=author.url)):
-        AuthorFriend.objects.filter(author=friend.url, friend=author.url).delete()
+    if (friend and AuthorFriend.objects.filter(author=friend_url, friend=author.url)):
+        AuthorFriend.objects.filter(author=friend_url, friend=author.url).delete()
     else:
         # invalid friend reject request
         pass

@@ -15,7 +15,7 @@ READ_TIMEOUT_LIMIT = 20
 AUTHOR_FIELDS = ["id", "host", "displayName", "url"]
 COMMENT_FIELDS = ["author", "comment", "contentType", "published", "id"]
 POST_FIELDS = ["title", "source", "origin", "description", "content",
-               "contentType", "author", "categories", "count", "size", "next",
+               "contentType", "author", "categories", "count", "size",
                "comments", "published", "id", "visibility", "visibleTo",
                "unlisted"]
 
@@ -117,5 +117,5 @@ def get_remote_posts():
 
 def get_posts():
     local_posts = get_local_posts()
-    remote_posts = get_remote_posts()
+    remote_posts = [] # get_remote_posts()
     return local_posts + remote_posts
