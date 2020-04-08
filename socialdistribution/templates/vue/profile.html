@@ -62,6 +62,9 @@
                 {% if editable %}
                 <button type="button" v-on:click="editing = true" class="btn btn-primary"><i
                         class="fas fa-edit"></i>Edit Profile</button>
+                {% elif author_relation %}
+                <button type="button" v-on:click="deleteFriend()" class="btn btn-primary"><i
+                    class="fas fa-user-friends"></i>Unfriend</button>
                 {% else %}
                 <button type="button" v-on:click="addFriend()" class="btn btn-primary"><i
                         class="fas fa-user-friends"></i>Add Friend</button>

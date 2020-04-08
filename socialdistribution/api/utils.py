@@ -306,6 +306,48 @@ def validate_friend_request(request_dict):
     # OK
     return 200
 
+def validate_friend_relation(request_dict):
+    for field, field_type in [("query", str), ("author", dict), ("friend", dict)]:
+        # Bad Request
+        if field not in request_dict.keys() or not isinstance(
+            request_dict[field], field_type
+        ):
+            return 400
+
+    for author in [request_dict["author"], request_dict["friend"]]:
+        # check fields
+        for field, field_type in [
+            ("id", str),
+            ("host", str),
+            ("displayName", str),
+            ("url", str),
+        ]:
+            # Bad Request
+            if field not in author.keys() or not isinstance(author[field], field_type):
+                return 400
+
+        # make sure author exists
+        results = Author.objects.filter(id=author["id"])
+        if results.count() == 0:
+            # Not Found
+            return 404
+
+    author = Author.objects.get(id=request_dict["author"]["id"])
+    friend = Author.objects.get(id=request_dict["friend"]["id"])
+
+    # make sure author and friend aren't the same user
+    if author.id == friend.id:
+        # Bad Request
+        return 400
+
+    # make sure friend request doesn't exist already
+    results = AuthorFriend.objects.filter(author=author, friend=friend)
+    if results.count() != 0:
+        # OK
+        return 200
+
+    # Bad Request
+    return 400
 
 def author_can_see_post(author_url, post_dict):
 

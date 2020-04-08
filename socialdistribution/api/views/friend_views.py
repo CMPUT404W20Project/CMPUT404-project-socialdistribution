@@ -7,6 +7,7 @@ from profiles.models import Author, AuthorFriend
 from profiles.utils import get_friend_urls_of_author
 from ..utils import (
     validate_friend_request,
+    validate_friend_relation,
     validate_author_friends_post_query,
     is_server_request
 )
@@ -146,6 +147,7 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
 
 @check_auth
 def friend_request(request):
+    #create a friend request
     if request.method == "POST":
 
         request_body = json.loads(request.body)
@@ -199,6 +201,53 @@ def friend_request(request):
             "query": "friendrequest",
             "success": True,
             "message": "Friend request sent",
+        }
+        return JsonResponse(response_body)
+
+    #delete the friendrequest from both side
+    elif request.method == "DELETE":
+        request_body = json.loads(request.body)
+
+        # check that the friend request is valid
+        status = validate_friend_relation(request_body)
+
+        # invalid request
+        if status != 200:
+            response_body = {
+                "query": "friendrequest",
+                "success": False,
+                "message": "Invalid delete a friendrequest",
+            }
+            return JsonResponse(response_body, status=status)
+
+        # In this case, the id is the URL
+        sender_url = request_body["author"]["id"]
+        receiver_url = request_body["friend"]["id"]
+
+        receiver_id = get_url_part(receiver_url, -1)
+
+        # Only the author logged in can delete a request for
+        # themselves, and no one else
+
+        if not is_server_request(request) and request.user.url != sender_url:
+            response_body = {
+                "query": "friendrequest",
+                "success": False,
+                "message": "Cannot make a request for another author",
+            }
+            return JsonResponse(response_body, status=403)
+
+        # Need to add check that we can only add friends if
+        # we have server credentials of remote authors
+        
+        friend_req = AuthorFriend(author=sender_url, friend=receiver_url)
+
+        friend_req.delete()
+
+        response_body = {
+            "query": "friendrequest",
+            "success": True,
+            "message": "Friend request deleted",
         }
         return JsonResponse(response_body)
 

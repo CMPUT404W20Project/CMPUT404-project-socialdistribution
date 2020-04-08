@@ -9,8 +9,10 @@ from posts.forms import PostForm
 from .forms import ProfileForm, ProfileSignup
 
 from .decorators import check_authentication
-from .utils import get_friend_profiles_of_author, get_friend_requests_to_author,\
-                   get_friend_requests_from_author
+from .utils import get_friend_profiles_of_author,\
+                   get_friend_requests_to_author,\
+                   get_friend_requests_from_author,\
+                   isFriend
 
 from .models import AuthorFriend, Author
 import base64
@@ -135,6 +137,7 @@ def view_author_profile(request, author_id):
     form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
 
     editable = (author.id == request.user.id)
+    author_relation = isFriend(author_id, request.user.id)
 
     if request.method == 'POST':
         if form.is_valid():
@@ -147,7 +150,8 @@ def view_author_profile(request, author_id):
     context = {
         'user_id': author.id,
         'form': form,
-        'editable': editable
+        'editable': editable,
+        'author_relation': author_relation
     }
 
     return render(request, template, context)

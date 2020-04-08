@@ -35,6 +35,21 @@ var vm = new Vue({
                 (json) => {
                     console.log(json);
                 });
+        },
+        deleteFriend: function(){
+            const url = `${this.profileAuthor.host}/api/friendrequest`;
+
+            fetch(url, {
+                method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *client
+            }).then((response) => {
+                console.log(response);
+                window.location.reload();
+            });
         }
     },
     // runs when the vue app is created
