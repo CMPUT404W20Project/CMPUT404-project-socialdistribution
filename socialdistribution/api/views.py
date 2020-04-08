@@ -858,7 +858,7 @@ def github_posts(request):
             response_body = {
                 "query": "github_posts",
                 "success": False,
-                "message": "Can't retrieve the author's github activities",
+                "message": "Can't retrieve the author's github activities"
             }
             return JsonResponse(response_body, status=r.status_code)
 
