@@ -10,13 +10,17 @@ from datetime import datetime
 import dateutil.parser
 
 
+def is_server_request(request):
+    return request.user.is_anonymous
+
+
 def authenticate_server(username, password):
     try:
         if Server.objects.get(local_server_user=username,
                               local_server_pass=password):
             return True
         return False
-    except:
+    except Server.DoesNotExist:
         return False
 
 
