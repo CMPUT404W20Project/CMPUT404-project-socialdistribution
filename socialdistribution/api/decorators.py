@@ -27,11 +27,7 @@ def check_auth(view):
 
                 if authenticate_server(username=uname, password=passwd):
                     return view(request, *args, **kwargs)
-                else:
-                    response = HttpResponse()
-                    response.status_code = 401
-                    response['WWW-Authenticate'] = 'Basic'
-                    return response
+
                 # Check if user exists
                 user = authenticate(username=uname, password=passwd)
                 # If user exists, and is active, login user and then check that they're authenticated, then return view
@@ -41,6 +37,10 @@ def check_auth(view):
                         request.user = user
                         if request.user.is_authenticated:
                             return view(request, *args, **kwargs)
+                response = HttpResponse()
+                response.status_code = 401
+                response['WWW-Authenticate'] = 'Basic'
+                return response
         else:
             response = HttpResponse()
             response.status_code = 401
