@@ -149,6 +149,7 @@ def author_friends_with_author(request, author_uuid, author_friend_url):
 def friend_request(request):
     #create a friend request
     if request.method == "POST":
+        print(request)
 
         request_body = json.loads(request.body)
 
@@ -206,7 +207,10 @@ def friend_request(request):
 
     #delete the friendrequest from both side
     elif request.method == "DELETE":
+        print("hhhhhhhhhhhhh")
+        print(request)
         request_body = json.loads(request.body)
+        
 
         # check that the friend request is valid
         status = validate_friend_relation(request_body)

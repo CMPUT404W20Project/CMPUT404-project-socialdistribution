@@ -37,7 +37,7 @@ var vm = new Vue({
                 });
         },
         deleteFriend: function(){
-            const url = `${this.profileAuthor.host}/api/friendrequest`;
+            const url = `${this.profileAuthor.host}api/friendrequest`;
 
             fetch(url, {
                 method: 'DELETE', // *GET, POST, PUT, DELETE, etc.
@@ -48,7 +48,7 @@ var vm = new Vue({
                 referrerPolicy: 'no-referrer', // no-referrer, *client
             }).then((response) => {
                 console.log(response);
-                window.location.reload();
+                // window.location.reload();
             });
         }
     },

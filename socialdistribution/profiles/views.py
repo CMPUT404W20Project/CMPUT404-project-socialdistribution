@@ -137,7 +137,7 @@ def view_author_profile(request, author_id):
     form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
 
     editable = (author.id == request.user.id)
-    author_relation = isFriend(author_id, request.user.id)
+    author_relation = isFriend(author.url, request.user.url)
 
     if request.method == 'POST':
         if form.is_valid():
