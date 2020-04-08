@@ -22,6 +22,8 @@ def post_to_dict(post, request):
     # and the example article responses are 0-indexed
     page_obj = paginator.page("1")
 
+    print(post.categories)
+
     post_dict = {
         "title": post.title,
         "source": post.source,
@@ -30,7 +32,7 @@ def post_to_dict(post, request):
         "contentType": post.contentType,
         "content": post.content,
         "author": author_to_dict(post.author),
-        "categories": ["web", "tutorial"],
+        "categories": post.categories.split(",") if len(post.categories) > 0 else [],
         "count": paginator.count,
         "size": page_size,
         "comments": [comment_to_dict(comment) for comment in comments],
