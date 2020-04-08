@@ -282,23 +282,17 @@ def validate_friend_request(request_dict):
             # Bad Request
             if field not in author.keys() or not isinstance(author[field], field_type):
                 return 400
-
-        # make sure author exists
-        results = Author.objects.filter(id=author["id"])
-        if results.count() == 0:
-            # Not Found
-            return 404
-
-    author = Author.objects.get(id=request_dict["author"]["id"])
-    friend = Author.objects.get(id=request_dict["friend"]["id"])
+                
+    author_url = request_dict["author"]["id"]
+    friend_url = request_dict["friend"]["id"]
 
     # make sure author and friend aren't the same user
-    if author.id == friend.id:
+    if author_url == friend_url:
         # Bad Request
         return 400
 
     # make sure friend request doesn't exist already
-    results = AuthorFriend.objects.filter(author=author, friend=friend)
+    results = AuthorFriend.objects.filter(author=author_url, friend=friend_url)
     if results.count() > 0:
         # Bad Request
         return 400
