@@ -14,7 +14,7 @@
             {% else %}
             <div>
             {% endif %}
-                {% verbatim %}
+            {% verbatim %}
                 <h1 id="profile-header" class="card-title">{{ nameForAuthor(profileAuthor) }}</h1>
 
                 <div class="profile-field" id="profile-id"
@@ -60,28 +60,30 @@
                 {% endverbatim %}
 
                 {% if editable %}
-                <button type="button" v-on:click="editing = true" class="btn btn-primary"><i class="fas fa-edit"></i>Edit Profile</button>
+                <button type="button" v-on:click="editing = true" class="btn btn-primary"><i
+                        class="fas fa-edit"></i>Edit Profile</button>
                 {% else %}
-                <button type="button" v-on:click="addFriend()" class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
+                <button type="button" v-on:click="addFriend()" class="btn btn-primary"><i
+                        class="fas fa-user-friends"></i>Add Friend</button>
                 {% endif %}
             </div>
             {% if editable %}
-            <div v-if="editing" class="card-body">
+            <div v-if="editing">
+                <h1 class="card-title">Edit Profile</h1>
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="submit" class="btn btn-primary" value="Save">
                 </form>
-            </div>            
+            </div>
             {% endif %}
         </div>
     </div>
-</div>
 
-<!-- CSS -->
-<link rel="stylesheet" href="{% static 'css/vue/profile.css' %}">
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/vue/profile.css' %}">
 
-<!-- JS -->
-<script defer type="text/javascript" src="{% static 'js/vue/profile.js' %}"></script>
+    <!-- JS -->
+    <script defer type="text/javascript" src="{% static 'js/vue/profile.js' %}"></script>
 
-{% endblock content %}
+    {% endblock content %}
