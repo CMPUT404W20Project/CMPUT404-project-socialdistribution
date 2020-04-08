@@ -212,6 +212,7 @@ def register(request):
 def my_friends(request):
 
     author = request.user
+    # template = 'vue/friends_list.html'
     template = 'friends/friends_list.html'
     friendList = get_friend_profiles_of_author(author.url)
 
@@ -227,6 +228,7 @@ def my_friends(request):
 def my_friend_requests(request):
 
     author = request.user
+    # template = 'vue/friends_request.html'
     template = 'friends/friends_request.html'
     friendRequestList = get_friend_requests_to_author(author.url)
     context = {
@@ -241,6 +243,7 @@ def my_friend_requests(request):
 def my_friend_following(request):
 
     author = request.user
+    # template = 'vue/friends_follow.html'
     template = 'friends/friends_follow.html'
     friendFollowList = get_friend_requests_from_author(author.url)
 
@@ -258,6 +261,7 @@ def search_friends(request):
 
     author = request.user
     friendSearchList = Author.objects.none()
+    # template = 'vue/friends_search.html'
     template = 'friends/friends_search.html'
 
     if request.method == 'POST' and request.POST['search_text']:
