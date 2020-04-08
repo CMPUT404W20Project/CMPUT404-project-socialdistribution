@@ -879,7 +879,7 @@ def github_posts(request):
                 if type == 'PullRequestEvent':
                     content += payload['pull_request']['body']
                 elif type == 'PushEvent':
-                    for i in range(payload['size']):
+                    for i in range(len(payload['commits'])):
                         content += "["+ payload['commits'][i]['message'].replace('\n\n', ' ') +"]("+ payload['commits'][i]['url'] + ") \r\n "
                 elif type == 'PullRequestReviewCommentEvent':
                     content += payload['comment']['body']
@@ -888,7 +888,7 @@ def github_posts(request):
                 elif type == 'IssuesEvent':
                     content += "["+ payload['issue']['title'] +"]("+ payload['issue']['html_url'] + ")"
 
-                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/plain')
+                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/markdown')
                 github_post.save()
 
         response_body = {
