@@ -22,6 +22,38 @@ CONTENT_TYPE_CHOICES = (
     (JPEG, JPEG),
 )
 
+'''
+reference: 
+https://stackoverflow.com/questions/22340258/django-list-field-in-model
+https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
+'''
+class ListField(models.TextField):
+
+    description = "Stores a python list"
+
+    def __init__(self, *args, **kwargs):
+        super(ListField, self).__init__(*args, **kwargs)
+
+    def to_python(self, value):
+        '''converting-values-to-python-objects'''
+        if not value:
+            value = []
+
+        if isinstance(value, list):
+            #check the object is an instance of an list type
+            return value
+     
+        return list(value.split(","))
+
+    def get_prep_value(self, value):
+        if value is None:
+            return value
+
+        return str(value)
+
+    def value_to_string(self, obj):
+        value = self._get_val_from_obj(obj)
+        return self.get_db_prep_value(value)
 
 class Post(models.Model):
     PUBLIC = 'PUBLIC'
@@ -54,8 +86,10 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    visibleTo = models.TextField(null=True, default="[]")
+    
+    visibleTo = ListField(blank=True)
     unlisted = models.BooleanField(default=False)
+
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)

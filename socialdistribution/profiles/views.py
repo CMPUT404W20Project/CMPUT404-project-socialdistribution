@@ -174,12 +174,24 @@ def view_author_profile(request, author_id):
 
 def register(request):
     template = "login/register.html"
+    
     if request.method == "POST":
         form = ProfileSignup(request.POST)
-        print("Checking if form is VALID...")
+       
         if form.is_valid():
             print("...form is valid!")
-            form.save()
+            #Manually get host and format it.
+            domain = "http://%s/" % request.get_host()
+
+            #Calling form.save makes a valid instance of the author, but doesn't push to db
+            #https://stackoverflow.com/a/20177911
+            instance = form.save(commit=False)
+            #Manually change host to that of the server.
+
+            instance.host = domain
+            #Save author object to database.
+            instance.save()
+
             return redirect("/accounts/login")
         else:
             print("...form is INVALID!")

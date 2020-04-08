@@ -9,23 +9,28 @@ function setImageSize() {
 
 // template/posts/post_form.html
 $(document).ready(function() {
+
+   // Displaying different fields for different content types
   if ($("#id_contentType").val() == 'text/plain') {
     $(".fa-camera").hide();
     $("#id_image_file").hide();
   }
 
-    $('#id_contentType').on('change', function() {
-        if (this.value == 'image/png;base64' || this.value == 'image/jpeg;base64') {
-        $("#id_content").attr("required", false)
-        $("#id_content").hide();
-        $(".fa-camera").show();
-        $("#id_image_file").show();
-        } else {
-        $(".fa-camera").hide();
-        $("#id_image_file").hide();
-        $("#id_content").show();
-        }
-    });
+  $('#id_contentType').on('change', function() {
+    if (this.value == 'image/png;base64' || this.value == 'image/jpeg;base64') {
+      $("#id_content").attr("required", false)
+      $("#id_content").hide();
+      $("#id_unlisted").prop('checked', true);
+      $(".fa-camera").show();
+      $("#id_image_file").show();
+    } else {
+      $("#id_content").attr("required", true)
+      $("#id_content").show();
+      $("#id_unlisted").prop('checked', false);
+      $(".fa-camera").hide();
+      $("#id_image_file").hide();
+    }
+  });
 
     /**
      * Handle delete a post
@@ -77,6 +82,7 @@ $(document).ready(function() {
 
             $(".open-visibileTo-button").click(function(){
                 var visible_to_list = new Array;
+
                 $("#myForm").show();
                 $(".close-visibileTo-button").click(function(){
                     $("#myForm").hide();
@@ -97,13 +103,13 @@ $(document).ready(function() {
                             }
                         }
                     }
-                    // console.log( visible_to_list);
-                    $("#id_visibleTo").val(visible_to_list.toString());
+                    console.log( visible_to_list);
+                    $("#id_visibleTo").val(visible_to_list);
                 })
             })
 
         }else{
-            $("#id_visibleTo").val("[]");
+            // $("#id_visibleTo").val("[]");
             $(".open-visibileTo-button").css("visibility","hidden");
         }
     });
