@@ -59,15 +59,15 @@ class Post(models.Model):
     def source(self):
         host = get_hostname()
         if host[-1] == "/":
-            return("%sapi/posts/%s" % (host, self.id))
-        return("%s/api/posts/%s" % (host, self.id))
+            return("%sposts/%s" % (host, self.id))
+        return("%s/posts/%s" % (host, self.id))
 
     @property
     def origin(self):
         host = get_hostname()
         if host[-1] == "/":
-            return("%sapi/posts/%s" % (host, self.id))
-        return("%s/api/posts/%s" % (host, self.id))
+            return("%sposts/%s" % (host, self.id))
+        return("%s/posts/%s" % (host, self.id))
 
     def categories_as_list(self):
         return self.categories.split(',')
