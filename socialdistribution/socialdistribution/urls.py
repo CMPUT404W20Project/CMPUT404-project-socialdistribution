@@ -21,6 +21,8 @@ from socialdistribution import views as socialdistribution_views
 from django.conf import settings
 from django.conf.urls.static import static
 from api import views as api_views
+from django.views.decorators.csrf import csrf_exempt
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('django.contrib.auth.urls')),
@@ -40,7 +42,7 @@ urlpatterns = [
     path('friends/friend_following', profiles_views.my_friend_following, name='my_friend_following'),
     path('friends/accept/<uuid:friend_id_to_accept>/', profiles_views.accept_friend, name='accept_friend'),
     path('friends/reject/<uuid:friend_id_to_reject>/', profiles_views.reject_friend, name='reject_friend'),
-    path('posts/<uuid:post_id>/comments', api_views.post_comments, name='comments'),
+    path('posts/<uuid:post_id>/comments', csrf_exempt(api_views.post_comments), name='comments'),
     path('api/', include('api.urls')),
     path('404/', socialdistribution_views.error_404, name='error_404'),
     path('403/', socialdistribution_views.error_403, name='error_403'),

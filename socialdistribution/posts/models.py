@@ -22,7 +22,7 @@ CONTENT_TYPE_CHOICES = (
 )
 
 '''
-reference: 
+reference:
 https://stackoverflow.com/questions/22340258/django-list-field-in-model
 https://docs.djangoproject.com/en/3.0/howto/custom-model-fields/#converting-values-to-python-objects
 '''
@@ -41,7 +41,7 @@ class ListField(models.TextField):
         if isinstance(value, list):
             #check the object is an instance of an list type
             return value
-     
+
         return list(value.split(","))
 
     def get_prep_value(self, value):
@@ -80,7 +80,7 @@ class Post(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     visibility = models.CharField(max_length=20, choices=VISIBILITY_CHOICES,
                                   default=PUBLIC)
-    
+
     visibleTo = ListField(blank=True)
     unlisted = models.BooleanField(default=False)
 
@@ -108,7 +108,7 @@ class Post(models.Model):
 
     def serialize(self):
 
-        fields = ["title", "source", "origin", "description", "content"
+        fields = ["title", "source", "origin", "description", "content",
                   "contentType", "author", "categories", "comments",
                   "published", "id", "visibility", "visibleTo", "unlisted"]
 
