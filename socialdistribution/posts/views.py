@@ -5,9 +5,7 @@ from django.urls import reverse
 from .models import Post, Comment
 from .forms import CommentForm, PostForm
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
-from profiles.utils import getFriendsOfAuthor, getFriendRequestsToAuthor,\
-                   getFriendRequestsFromAuthor, isFriend
+from profiles.utils import get_friend_urls_of_author, get_friend_profiles_of_author
 from .utils import get_public_posts_from_remote_servers
 import base64
 from api.utils import author_can_see_post
@@ -25,16 +23,15 @@ def old_stream(request):
 
     author = request.user
     template = 'posts/posts_base.html'
-    authorFriendList = getFriendsOfAuthor(author)
-    friendList = []
-    for authorFriend in authorFriendList:
-        friendList.append(authorFriend.friend)
-
+    friendList = get_friend_urls_of_author(author.url)
     local_posts = Post.objects.filter(visibility='PUBLIC', unlisted=False).order_by('-published')
     author_posts = Post.objects.filter(author=author).order_by('-published')
-    friend_posts = Post.objects.filter(visibility='FRIENDS', unlisted=False, author__in=friendList).order_by('-published')
-    posts = [post.serialize() for post in (local_posts | author_posts| friend_posts)]
+    # This will need to be fixed since author__in won't work
+    friend_posts = Post.objects.filter(visibility='FRIENDS', unlisted=False).order_by('-published')
+    friend_posts = [post.serialize() for post in friend_posts if post.author.url in friendList]
+    posts = [post.serialize() for post in (local_posts | author_posts)] + friend_posts
     remote_posts = get_public_posts_from_remote_servers()
+
 
     if remote_posts:
         posts += remote_posts
@@ -78,12 +75,10 @@ def view_post(request, post_id):
     editable = (post.author.id == author.id)
 
     # Will need to clean this up later by making this a decorator
-    if (not author_can_see_post(author, post)):
+    if (not author_can_see_post(author.url, post.serialize())):
         return render(request, "403.html")
 
     template = 'vue/post.html'
-
-    # TODO: add friends functionality, like the old one had
     context = {
         'post_id': post_id,
         'form': form,
@@ -121,7 +116,7 @@ def edit_post(request, post_id):
     author = request.user
     template = 'posts/posts_edit.html'
     post = Post.objects.get(id=post_id)
-    friendList = getFriendsOfAuthor(author)
+    friendList = get_friend_profiles_of_author(author.url)
 
     if author != post.author or post.description != '':
         return render(request, "403.html")

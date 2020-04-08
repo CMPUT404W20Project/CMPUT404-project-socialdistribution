@@ -164,7 +164,8 @@ class Post_Comment_Tests(TestCase):
     # Try to create comment
     def test_comment_creation(self):
         try:
-            comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+            # This user does not have the host initialized so will cause problems
+            comment_made = Comment.objects.create(author = self.user.url, post = self.example_post, comment = "hi")
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
             self.assertTrue(True)
         except:
@@ -172,7 +173,7 @@ class Post_Comment_Tests(TestCase):
 
     # Make sure that post made is put in table.
     def test_comment_retrieval(self):
-        comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+        comment_made = Comment.objects.create(author = self.user.url, post = self.example_post, comment = "hi")
         comment_from_table = Comment.objects.get(id = comment_made.id)
 
         # Check that retrieved comment is the same as that submitted.
@@ -180,7 +181,7 @@ class Post_Comment_Tests(TestCase):
 
     def test_comment_invalid_type(self):
         try:
-            comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi", \
+            comment_made = Comment.objects.create(author = self.user.url, post = self.example_post, comment = "hi", \
             contentType = "invalid")
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except ValidationError as e:
@@ -195,7 +196,7 @@ class Post_Comment_Tests(TestCase):
     def test_invalid_user(self):
         modified_user = self.user
         modified_user.id = uuid.uuid1()
-        comment_made = Comment.objects.create(author = modified_user, post = self.example_post, comment = "hi")
+        comment_made = Comment.objects.create(author = modified_user.url, post = self.example_post, comment = "hi")
         try:
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         except Exception as e:
@@ -209,7 +210,7 @@ class Post_Comment_Tests(TestCase):
     def test_invalid_post(self):
         modified_post = self.example_post
         modified_post.id = uuid.uuid1()
-        comment_made = Comment.objects.create(author = self.user, post = self.example_post, comment = "hi")
+        comment_made = Comment.objects.create(author = self.user.url, post = self.example_post, comment = "hi")
 
         try:
             comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
@@ -240,7 +241,7 @@ class Post_Comment_Tests(TestCase):
         test_post = self.example_post
 
         # Create comment and post, and check that comment exists.
-        comment_made = Comment.objects.create(author = self.user, post = test_post, comment = "hi")
+        comment_made = Comment.objects.create(author = self.user.url, post = test_post, comment = "hi")
         comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         self.assertTrue(comment_made in Comment.objects.all())
 
@@ -252,7 +253,7 @@ class Post_Comment_Tests(TestCase):
         test_user = self.user
 
         # Create comment and post, and check that comment exists.
-        comment_made = Comment.objects.create(author = test_user, post = self.example_post, comment = "hi")
+        comment_made = Comment.objects.create(author = test_user.url, post = self.example_post, comment = "hi")
         comment_made.full_clean() # NOTE: Have to run .full_clean() on object to check fields.
         self.assertTrue(comment_made in Comment.objects.all())
 

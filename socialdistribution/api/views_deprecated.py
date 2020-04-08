@@ -1,7 +1,5 @@
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 from django.core.paginator import Paginator
-from django.urls import reverse
 
 from .decorators import check_auth
 import requests

@@ -3,13 +3,29 @@ from django.core.paginator import Paginator
 
 from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
-from profiles.utils import getFriendsOfAuthor
+from profiles.utils import get_friend_urls_of_author
+from servers.models import Server
+from socialdistribution.utils import get_host, get_hostname
 
 from datetime import datetime
 import dateutil.parser
 
 
-def post_to_dict(post, request):
+def is_server_request(request):
+    return request.user.is_anonymous
+
+
+def authenticate_server(username, password):
+    try:
+        if Server.objects.get(local_server_user=username,
+                              local_server_pass=password):
+            return True
+        return False
+    except Server.DoesNotExist:
+        return False
+
+
+def post_to_dict(post):
     comments = Comment.objects.filter(post=post).order_by("-published")
 
     page_size = 50
@@ -18,7 +34,7 @@ def post_to_dict(post, request):
     paginator = Paginator(comments, page_size)
 
     # get the page
-    # note: the off-by-ones here are because Paginator is 1-indexed 
+    # note: the off-by-ones here are because Paginator is 1-indexed
     # and the example article responses are 0-indexed
     page_obj = paginator.page("1")
 
@@ -44,41 +60,21 @@ def post_to_dict(post, request):
     # give a url to the next page if it exists
     if page_obj.has_next():
         next_uri = f"/api/posts/{post.id}/comments?page={page_obj.next_page_number() - 1}"
-        post_dict["next"] = request.build_absolute_uri(next_uri)
+        hostname = get_hostname()
+        if hostname[-1] == "/":
+            hostname = hostname[:-1]
+
+        post_dict["next"] = hostname + next_uri
 
     return post_dict
 
 
 def author_to_dict(author):
-    author_dict = {
-        "id": author.id,
-        "url": author.url,
-        "host": author.host,
-        "displayName": author.displayName,
-    }
-
-    if author.github:
-        author_dict["github"] = author.github
-    if author.firstName:
-        author_dict["firstName"] = author.firstName
-    if author.lastName:
-        author_dict["lastName"] = author.lastName
-    if author.email:
-        author_dict["email"] = author.email
-    if author.bio:
-        author_dict["bio"] = author.bio
-
-    return author_dict
+    return author.serialize()
 
 
 def comment_to_dict(comment):
-    return {
-        "author": author_to_dict(comment.author),
-        "comment": comment.comment,
-        "contentType": comment.contentType,
-        "published": comment.published.isoformat(),
-        "id": comment.id,
-    }
+    return comment.serialize()
 
 
 def is_valid_post(post_dict):
@@ -223,7 +219,7 @@ def is_valid_comment(comment_dict):
 
 def insert_comment(post, comment_dict):
     # get the author specified by the comment
-    author = Author.objects.get(id=comment_dict["comment"]["author"]["id"])
+    author_url = comment_dict["comment"]["author"]["id"]
 
     if "published" in comment_dict["comment"].keys():
         comment_datetime = make_aware(
@@ -234,7 +230,7 @@ def insert_comment(post, comment_dict):
             comment=comment_dict["comment"]["comment"],
             published=comment_datetime,
             post=post,
-            author=author,
+            author=author_url,
             contentType=comment_dict["comment"]["contentType"]
         )
     else:
@@ -242,10 +238,9 @@ def insert_comment(post, comment_dict):
             # id=comment_dict["comment"]["id"],
             comment=comment_dict["comment"]["comment"],
             post=post,
-            author=author,
+            author=author_url,
             contentType=comment_dict["comment"]["contentType"]
         )
-
     comment.save()
 
     return comment
@@ -312,37 +307,46 @@ def validate_friend_request(request_dict):
     return 200
 
 
-def author_can_see_post(author, post):
-    if author.is_anonymous and post.visibility != "PUBLIC":
+def author_can_see_post(author_url, post_dict):
+
+    post_author_url = post_dict["author"]["id"]
+
+    if not author_url or not post_author_url:
+        print("No url provided")
         return False
-    if author == post.author:
+
+    if author_url == post_author_url:
         return True
-    if post.visibility == "PUBLIC":
+
+    if (post_dict["visibility"] == "PUBLIC"):
         return True
-    if post.visibility == "PRIVATE" and author == post.author:
-        return True
+
+    if (post_dict["visibility"] == "PRIVATE"):
+        if author_url == post_author_url:
+            return True
+        elif author_url in post_dict["visibleTo"]:
+            return True
+
     # TODO: check this
-    if post.visibility == "SERVERONLY" and author.host == post.author.host:
+    if (post_dict["visibility"] == "SERVERONLY" and
+       get_host(author_url) in post_dict["author"]["host"]):
         return True
-    if post.visibility == "FRIENDS":
-        post_author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(post.author)
-        ]
-        if author in post_author_friends:
-            return True
-    if post.visibility == "FOAF":
-        post_author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(post.author)
-        ]
-        if author in post_author_friends:
+
+    if post_dict["visibility"] == "FRIENDS":
+        post_author_friends = get_friend_urls_of_author(post_author_url)
+        if author_url in post_author_friends:
             return True
 
-        author_friends = [
-            friend.friend for friend in getFriendsOfAuthor(author)]
+    if post_dict["visibility"] == "FOAF":
+        post_author_friends = get_friend_urls_of_author(post_author_url)
 
-        author_friend_ids = set([friend.id for friend in author_friends])
-        post_author_friend_ids = set(
-            [friend.id for friend in post_author_friends])
+        if author_url in post_author_friends:
+            return True
+
+        author_friends = get_friend_urls_of_author(author_url)
+
+        author_friend_ids = set(author_friends)
+        post_author_friend_ids = set(post_author_friends)
 
         if len(author_friend_ids & post_author_friend_ids) > 0:
             return True

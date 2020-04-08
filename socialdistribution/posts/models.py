@@ -1,10 +1,9 @@
 import uuid
 
 from django.db import models
-from django import forms
 from profiles.models import Author
-from multiselectfield import MultiSelectField
-from datetime import datetime
+from profiles.utils import get_profile
+from socialdistribution.utils import get_hostname
 from django.utils import timezone
 
 
@@ -72,11 +71,6 @@ class Post(models.Model):
         (SERVERONLY, 'Server only')
     )
 
-    # DESCRIPTION_CHOICES = (
-    #     (WEB, 'Web'),
-    #     (TUTORIAL, 'Tutorial')
-    # )
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=200)
     description = models.CharField(blank=True, max_length=200)
@@ -97,20 +91,27 @@ class Post(models.Model):
 
     @property
     def source(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        host = get_hostname()
+        if host[-1] == "/":
+            return("%sposts/%s" % (host, self.id))
+        return("%s/posts/%s" % (host, self.id))
 
     @property
     def origin(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        host = get_hostname()
+        if host[-1] == "/":
+            return("%sposts/%s" % (host, self.id))
+        return("%s/posts/%s" % (host, self.id))
 
     def categories_as_list(self):
         return self.categories.split(',')
 
     def serialize(self):
 
-        fields = ["id", "title", "description", "categories", "published",
-                  "author", "visibility", "visibleTo", "unlisted",
-                  "contentType", "content"]
+        fields = ["title", "source", "origin", "description", "content"
+                  "contentType", "author", "categories", "comments",
+                  "published", "id", "visibility", "visibleTo", "unlisted"]
+
         post = dict()
         for field in fields:
             if field == "author":
@@ -120,6 +121,12 @@ class Post(models.Model):
             elif field == "categories":
                 if self.categories != "":
                     post["categories"] = self.categories.split(',')
+            elif field == "comments":
+                comments = Comment.objects.filter(post=self).order_by("-published")
+                post["comments"] = [comment.serialize() for comment in comments]
+            # elif field == "visibleTo":
+            #     post["visibleTo"] = self.visibleTo.to_python
+            #     pass
             else:
                 post[field] = str(getattr(self, field))
 
@@ -134,7 +141,22 @@ class Comment(models.Model):
     # published.editable=True
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.URLField(max_length=255)
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
+
+    def serialize(self):
+
+        fields = ["author", "comment", "contentType", "published",
+                  "id"]
+        comment = dict()
+        for field in fields:
+            if field == "author":
+                comment["author"] = get_profile(self.author)
+            elif field == "published":
+                comment["published"] = timezone.localtime(self.published)
+            else:
+                comment[field] = str(getattr(self, field))
+
+        return comment
