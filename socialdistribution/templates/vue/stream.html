@@ -33,7 +33,7 @@
         <div class="card post-card">
             <div class="card-body">
                 <h5 class="card-title">{{ post.title }}</h5>
-                <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
+                <a v-bind:href="urlForAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
                 <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
 
                 <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
@@ -55,7 +55,7 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item" v-for="comment in post.comments">
                     <div style="padding-left: 3em;">
-                        <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
+                        <a v-bind:href="urlForAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
                         <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
 
                         <p v-if="comment.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>

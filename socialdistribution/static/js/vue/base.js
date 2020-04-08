@@ -26,7 +26,11 @@ function editPost(post) {
 }
 
 function viewAuthor(author) {
-    window.location.replace(`/author/${author.id}/profile`);
+    window.location.replace(`${author.url}/profile`);
+}
+
+function urlForAuthor(author) {
+    return `${author.url}/profile`;
 }
 
 function nameForAuthor(author) {
