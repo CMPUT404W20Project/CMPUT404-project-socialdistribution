@@ -21,7 +21,7 @@ var vm = new Vue({
                 });
         },
         addFriend: function() {
-            const url = "/api/friendrequest";
+            const url = `/api/friendrequest`;
 
             let postBody = {
                 "query": "friendrequest",

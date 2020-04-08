@@ -23,8 +23,8 @@ var vm = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.posts = json["posts"];
-                    this.updateCategories();
-                    this.filterPosts();
+                    // this.updateCategories();
+                    // this.filterPosts();
                 });
         },
         updateCategories: function () {
@@ -82,7 +82,7 @@ var vm = new Vue({
             });
         },
         commentOnPost: function(post) {
-            const url = `${post.origin}/comments`;
+            const url = `/api/posts/${post.id}/comments`;
 
             let commentInputId = `#comment-${post.id}`;
             // get comment text
