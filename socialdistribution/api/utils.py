@@ -46,7 +46,7 @@ def post_to_dict(post):
         "contentType": post.contentType,
         "content": post.content,
         "author": author_to_dict(post.author),
-        "categories": ["web", "tutorial"],
+        "categories": post.categories.split(",") if len(post.categories) > 0 else [],
         "count": paginator.count,
         "size": page_size,
         "comments": [comment_to_dict(comment) for comment in comments],
