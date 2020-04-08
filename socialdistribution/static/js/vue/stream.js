@@ -23,8 +23,8 @@ var vm = new Vue({
                 .then(response => response.json())
                 .then(json => {
                     this.posts = json["posts"];
-                    this.updateCategories();
-                    this.filterPosts();
+                    // this.updateCategories();
+                    // this.filterPosts();
                 });
         },
         updateCategories: function () {
