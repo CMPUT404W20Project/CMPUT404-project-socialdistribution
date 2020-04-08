@@ -7,10 +7,14 @@
     <input type="hidden" id="user-id" name="user-id" value="{{ user_id }}">
 
     <!-- this means Django won't render this part -->
-    {% verbatim %}
     <div class="card profile-card">
         <div class="card-body">
+            {% if editable %}
             <div v-if="!editing">
+            {% else %}
+            <div>
+            {% endif %}
+                {% verbatim %}
                 <h1 id="profile-header" class="card-title">{{ nameForAuthor(profileAuthor) }}</h1>
 
                 <div class="profile-field" id="profile-id"
@@ -53,21 +57,23 @@
                         <a v-bind:href="profileAuthor.github">{{ profileAuthor.github }}</a>
                     </p>
                 </div>
+                {% endverbatim %}
 
-                <button type="button" v-if="profileAuthor.id == currentAuthor.id"
-                    v-on:click="editing = !editing" class="btn btn-primary"><i
-                        class="fas fa-edit"></i>Edit Profile</button>
-                <button type="button" v-if="profileAuthor.id != currentAuthor.id" v-on:click="addFriend()"
-                class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
+                {% if editable %}
+                <button type="button" v-on:click="editing = true" class="btn btn-primary"><i class="fas fa-edit"></i>Edit Profile</button>
+                {% else %}
+                <button type="button" v-on:click="addFriend()" class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
+                {% endif %}
             </div>
-            {% endverbatim %}
+            {% if editable %}
             <div v-if="editing" class="card-body">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type="submit" class="btn btn-primary" value="Save">
                 </form>
-            </div>
+            </div>            
+            {% endif %}
         </div>
     </div>
 </div>

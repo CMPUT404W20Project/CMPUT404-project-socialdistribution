@@ -110,6 +110,8 @@ def view_author_profile(request, author_id):
     author = Author.objects.get(id=author_id)
 
     form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
+
+    editable = (author.id == request.user.id)
     
     if request.method == 'POST':
         if form.is_valid():
@@ -121,9 +123,9 @@ def view_author_profile(request, author_id):
 
     context = {
         'user_id': author.id,
-        'form': form
+        'form': form,
+        'editable': editable
     }
-
 
     return render(request, template, context)
 

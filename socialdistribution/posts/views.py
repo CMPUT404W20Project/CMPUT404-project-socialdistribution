@@ -57,6 +57,26 @@ def view_post(request, post_id):
     author = request.user
     post = Post.objects.get(pk=post_id)
 
+    form = PostForm(request.POST or None, request.FILES or None, instance=post)
+
+    default_content = post.content
+    if request.method == 'POST':
+        if form.is_valid():
+            new_content = form.save(commit=False)
+            cont_type = form.cleaned_data['contentType']
+            if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
+                img = form.cleaned_data['image_file']
+                if(img != None):
+                    new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
+                else:
+                    new_content.content = default_content
+
+            new_content.save()
+            url = reverse('details', kwargs={'post_id': post.id})
+            return HttpResponseRedirect(url)
+
+    editable = (post.author.id == author.id)
+
     # Will need to clean this up later by making this a decorator
     if (not author_can_see_post(author, post)):
         return render(request, "403.html")
@@ -64,7 +84,9 @@ def view_post(request, post_id):
     template = 'vue/post.html'
 
     context = {
-        'post_id': post_id
+        'post_id': post_id,
+        'form': form,
+        'editable': editable
     }
 
     return render(request, template, context)

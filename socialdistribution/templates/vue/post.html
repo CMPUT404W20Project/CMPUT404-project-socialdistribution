@@ -7,45 +7,93 @@
     <input type="hidden" id="post-id" name="post-id" value="{{ post_id }}">
 
     <!-- this means Django won't render this part -->
-    {% verbatim %}
     <div v-if="post">
         <div class="card post-card">
-            <div class="card-body">
-                <h5 class="card-title">{{ post.title }}</h5>
-                <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
-                <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
+            {% if editable %}
+            <div v-if="!editing">
+            {% else %}
+            <div>
+            {% endif %}
+                <div class="card-body">
+                    {% verbatim %}
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <a href="javascript:;" v-on:click="viewAuthor(post.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(post.author) }}</h6></a>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ prettyDate(post.published) }}</h6>
 
-                <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
-                <span v-else-if="post.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
-                <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
-                <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
+                    <p v-if="post.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ post.content }}</p>
+                    <span v-else-if="post.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(post.content)" style="padding-top: 1em;"></span>
+                    <div v-else-if="post.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${post.content}`" alt="Image"></div>
+                    <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
 
-                <button type="button" v-on:click="editPost(post)" class="btn btn-primary"v-if="post.author.url == currentAuthor.id"><i class="fas fa-edit"></i>Edit</button>
+                    {% endverbatim %}
+                    {% if editable %}
+                    <button type="button" v-on:click="editing = true" class="btn btn-primary" ><i class="fas fa-edit"></i>Edit</button>
+                    <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger"><i class="fas fa-trash-alt"></i>Delete</button>
+                    {% endif %}
+                    {% verbatim %}
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item" v-for="comment in post.comments">
+                        <div style="padding-left: 3em;">
+                            <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
+                            <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
 
-                <!-- TODO url vs id -->
-                <button type="button" v-on:click="deletePost(post.id)" class="btn btn-danger" v-if="post.author.url == currentAuthor.id"><i class="fas fa-trash-alt"></i>Delete</button>
+                            <p v-if="comment.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
+                            <span v-else-if="comment.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(comment.comment)" style="padding-top: 1em;"></span>
+                            <div v-else-if="comment.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${comment.comment}`" alt="Image"></div>
+                            <div v-else-if="comment.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${comment.comment}`" alt="Image"></div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <label for="exampleFormControlTextarea1">Enter a comment:</label>
+                        <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
+                        <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 0.75em;">Submit</button>
+                    </li>
+                </ul>
+            {% endverbatim %}
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item" v-for="comment in post.comments">
-                    <div style="padding-left: 3em;">
-                        <a href="javascript:;" v-on:click="viewAuthor(comment.author)"><h6 class="card-subtitle mb-2">{{ nameForAuthor(comment.author) }}</h6></a>
-                        <h6 class="mb-2 text-muted">{{ prettyDate(comment.published) }}</h6>
+            {% if editable %}
+            <div class="card-body" v-if="editing">
+                <form method="POST" enctype="multipart/form-data" >
 
-                        <p v-if="comment.contentType === 'text/plain'" class="card-text" style="padding-top: 1em;">{{ comment.comment }}</p>
-                        <span v-else-if="comment.contentType === 'text/markdown'" class="card-text" v-html="converter.makeHtml(comment.comment)" style="padding-top: 1em;"></span>
-                        <div v-else-if="comment.contentType === 'image/png;base64'"><img class="post-image" v-bind:src="`data:image/png;base64, ${comment.comment}`" alt="Image"></div>
-                        <div v-else-if="comment.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${comment.comment}`" alt="Image"></div>
-                    </div>
-                </li>
-                <li class="list-group-item">
-                    <label for="exampleFormControlTextarea1">Enter a comment:</label>
-                    <textarea class="form-control" v-bind:id="`comment-${post.id}`" rows="2"></textarea>
-                    <button type="button" v-on:click="commentOnPost(post)" class="btn btn-primary" style="margin-top: 0.75em;"><i class="fas fa-reply"></i>Submit</button>
-                </li>
-            </ul>
+                {% csrf_token %}
+        
+                <div style="display:none">Author: {{ form.author }} </div>
+                {{ form.title }}<br>
+                <!-- {{ form.description }}<br> -->
+                <div style="display:none">{{ form.contentType }}</div>
+        
+                {{ form.unlisted }} Unlisted<br>
+                {% if form.contentType.value == "image/png;base64" or form.contentType.value == "image/jpeg;base64" %}
+                <div class="fa fa-camera"></div> {{ form.image_file }}
+                {% else %}
+                <div>{{ form.content }}</div>
+                {% endif%}
+                <br>
+                <div class="fa fa-list-alt "> Categories:</div><br>
+                <input type="text" data-role="tagsinput" class="form-control" name="categories" value="{{ form.categories.value }}"><br>
+                <div class="fa fa-calendar" style="display:none">  {{ form.published }}</div><br>
+                <div class="fa fa-users" id="post-visibility">  {{ form.visibility }}</div>
+                <button class="open-visibileTo-button"  type="button" style="visibility: hidden;">visibileTo</button><br>
+        
+                <div style="display: none;" >{{ form.visibleTo }}</div>
+        
+                <input type="submit" class="btn btn-primary" value="Save">
+                </form>
+        
+                <div class="form-popup" id="myForm" style="display: none; outline: 1px solid blue;">
+                    <button class="close-visibileTo-button"  type="button">CLOSE</button>
+                    <form class="form-container">
+                    <h3>Visible To</h3>
+                    {% for friend in friendList %}
+                    <input type="checkbox" value="{{ friend.friend.url }}" class="visibile-to-friends">{{ friend.friend }}</input>
+                    {% endfor %}
+                    </form>
+                </div>
+            {% endif %}
+            <div>
         </div>
     </div>
-    {% endverbatim %}
 </div>
 
 <!-- CSS -->

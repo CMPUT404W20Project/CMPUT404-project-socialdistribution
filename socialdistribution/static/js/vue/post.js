@@ -6,7 +6,8 @@ var vm = new Vue({
         return {
             post: null,
             currentAuthor: {},
-            converter: null
+            converter: null,
+            editing: false
         }
     },
     methods: {
