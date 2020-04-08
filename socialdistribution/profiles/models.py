@@ -75,11 +75,13 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
+        if self.host.strip()[-1] == "/":
+            return("%sauthor/%s" % (self.host, self.id))
         return("%s/author/%s" % (self.host, self.id))
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))
-
+ 
     def serialize(self):
         fields = ["id", "email", "firstName", "lastName", "displayName", "bio",
                   "host", "github", "profile_img"]
