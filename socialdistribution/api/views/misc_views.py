@@ -85,12 +85,12 @@ def github_posts(request):
                 repo_name = activity['repo']['name']
                 payload = activity['payload']
 
-                content = "["+ repo_name +"](https://github.com/"+ repo_name + ") \r\n "
+                content = "["+ repo_name +"](https://github.com/"+ repo_name + ") <br> "
                 if type == 'PullRequestEvent':
                     content += payload['pull_request']['body']
                 elif type == 'PushEvent':
                     for i in range(len(payload['commits'])):
-                        content += "["+ payload['commits'][i]['message'].replace('\n\n', ' ') +"]("+ payload['commits'][i]['url'] + ") \r\n "
+                        content += "["+ payload['commits'][i]['message'].replace('\n\n', ' ') +"]("+ payload['commits'][i]['url'] + ") <br> "
                 elif type == 'PullRequestReviewCommentEvent':
                     content += payload['comment']['body']
                 elif type == 'IssueCommentEvent':

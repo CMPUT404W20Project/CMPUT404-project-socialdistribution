@@ -42,6 +42,7 @@
                 <div v-else-if="post.contentType === 'image/jpeg;base64'"><img class="post-image" v-bind:src="`data:image/jpeg;base64, ${post.content}`" alt="Image"></div>
 
                 <div class="tag" style="background-color: deeppink;"><i class="fas fa-eye"></i>{{ post.visibility }}</div>
+                <div v-if="post.description !== ''" class="tag" style="background-color: #d73a49;">GitHub</div>
                 <div class="tag" v-if="post.categories.length > 0" v-for="category in post.categories">{{ category }}</div>
                 <br style="margin-bottom: 0.5em;">
 
