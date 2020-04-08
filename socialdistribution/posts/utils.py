@@ -45,8 +45,7 @@ def get_public_posts_from_remote_server(server):
     try:
         response = requests.get(
             api_request_url,
-            auth=HTTPBasicAuth(server_user, server_pass),
-            timeout=(CONNECTION_TIMEOUT_LIMIT, READ_TIMEOUT_LIMIT)
+            auth=HTTPBasicAuth(server_user, server_pass)
         )
 
         if response.status_code != 200:

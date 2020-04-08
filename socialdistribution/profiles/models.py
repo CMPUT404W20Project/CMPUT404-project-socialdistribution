@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.contrib.auth.base_user import BaseUserManager
 # from .utils import get_profile
-from socialdistribution.utils import get_host, get_url_part
+from socialdistribution.utils import get_hostname, get_host, get_url_part
 
 
 # Have to do this because in settings.py USER_AUTH_MODEL is set to Author.
@@ -52,7 +52,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     lastName = models.CharField(max_length=50)
     displayName = models.CharField(max_length=100)
     bio = models.TextField()
-    host = models.URLField(max_length=255)
+    # host = models.URLField(max_length=255)
     github = models.URLField(max_length=255)
     profile_img = models.FileField(default='temp.png', upload_to='profile/')
     password = models.CharField(max_length=255, default="changeme")
@@ -69,9 +69,18 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def url(self):
         # In the future use url reverse
         # reverse('author', args=[str(id)])
-        if self.host.strip()[-1] == "/":
-            return("%sauthor/%s" % (self.host, self.id))
-        return("%s/author/%s" % (self.host, self.id))
+        host = self.host
+        if host[-1] == "/":
+            return("%sauthor/%s" % (host, self.id))
+        return("%s/author/%s" % (host, self.id))
+
+    @property
+    def host(self):
+
+        host = get_hostname()
+        if host[-1] != "/":
+            return host + "/"
+        return host
 
     def __str__(self):
         return("%s %s" % (self.firstName, self.lastName))

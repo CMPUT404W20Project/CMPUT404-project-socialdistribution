@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from profiles.models import Author
 from profiles.utils import get_profile
+from socialdistribution.utils import get_hostname
 from django.utils import timezone
 
 
@@ -56,11 +57,17 @@ class Post(models.Model):
 
     @property
     def source(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        host = get_hostname()
+        if host[-1] == "/":
+            return("%sapi/posts/%s" % (host, self.id))
+        return("%s/api/posts/%s" % (host, self.id))
 
     @property
     def origin(self):
-        return("%s/posts/%s" % (self.author.host, self.id))
+        host = get_hostname()
+        if host[-1] == "/":
+            return("%sapi/posts/%s" % (host, self.id))
+        return("%s/api/posts/%s" % (host, self.id))
 
     def categories_as_list(self):
         return self.categories.split(',')
