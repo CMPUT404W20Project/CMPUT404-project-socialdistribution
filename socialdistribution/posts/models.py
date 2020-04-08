@@ -60,15 +60,19 @@ class Post(models.Model):
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
     content = models.TextField(blank=True)
-
+ 
     @property
     def source(self):
-        return("%sposts/%s" % (self.author.host, self.id))
+        if self.host.strip()[-1] == "/":
+            return("%sposts/%s" % (self.host, self.id))
+        return("%s/posts/%s" % (self.host, self.id))
 
     @property
     def origin(self):
-        return("%sposts/%s" % (self.author.host, self.id))
-
+        if self.host.strip()[-1] == "/":
+            return("%sposts/%s" % (self.host, self.id))
+        return("%s/posts/%s" % (self.host, self.id))
+        
     def categories_as_list(self):
         return self.categories.split(',')
 
