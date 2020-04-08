@@ -320,6 +320,10 @@ def author_can_see_post(author_url, post_dict):
 
     post_author_url = post_dict["author"]["id"]
 
+    if not author_url or not post_author_url:
+        print("No url provided")
+        return False
+
     if author_url == post_author_url:
         return True
 

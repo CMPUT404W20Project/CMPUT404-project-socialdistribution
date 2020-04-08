@@ -16,7 +16,7 @@ from ..utils import (
 def who_am_i(request):
     response_body = {"query": "whoami", "success": True}
 
-    if request.user.is_anonymous:
+    if is_server_request(request):
         response_body["author"] = "Server"
     else:
         response_body["author"] = author_to_dict(request.user)
