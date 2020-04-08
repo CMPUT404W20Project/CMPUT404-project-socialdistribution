@@ -49,7 +49,7 @@ def view_post(request, post_id):
     post = Post.objects.get(pk=post_id)
 
     # Will need to clean this up later by making this a decorator
-    if (not author_can_see_post(author, post)):
+    if (not author_can_see_post(author.url, post.serialize())):
         return render(request, "403.html")
 
     template = 'posts/posts_view.html'
@@ -59,7 +59,7 @@ def view_post(request, post_id):
         comment_form = CommentForm(request.POST or None)
         if comment_form.is_valid():
             content = request.POST.get('comment')
-            comment = Comment.objects.create(post=post, author=author,
+            comment = Comment.objects.create(post=post, author=author.url,
                                              comment=content)
             comment.save()
             return HttpResponseRedirect(request.path_info)

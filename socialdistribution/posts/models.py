@@ -2,6 +2,7 @@ import uuid
 
 from django.db import models
 from profiles.models import Author
+from profiles.utils import get_profile
 from django.utils import timezone
 
 
@@ -93,7 +94,7 @@ class Comment(models.Model):
     # published.editable=True
     post = models.ForeignKey(Post, related_name='comments',
                              on_delete=models.CASCADE)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.URLField(max_length=255)
     contentType = models.CharField(max_length=20,
                                    choices=CONTENT_TYPE_CHOICES,
                                    default=PLAIN)
@@ -105,7 +106,7 @@ class Comment(models.Model):
         comment = dict()
         for field in fields:
             if field == "author":
-                comment["author"] = self.author.serialize()
+                comment["author"] = get_profile(self.author)
             elif field == "published":
                 comment["published"] = timezone.localtime(self.published)
             else:

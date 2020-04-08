@@ -11,6 +11,7 @@ from ..utils import (
     post_to_dict,
     author_to_dict,
     author_can_see_post,
+    is_server_request,
 )
 
 
@@ -40,7 +41,11 @@ def specific_author_posts(request, author_id):
     author_posts = Post.objects.filter(author=author)
 
     # get only visible posts
-    visible_post_ids = [post.id for post in author_posts if author_can_see_post(request.user, post)]
+    visible_post_ids = []
+    for post in author_posts:
+        if is_server_request(request) or author_can_see_post(request.user.url, post.serialize()):
+            visible_post_ids.append(post.id)
+
     visible_author_posts = author_posts.filter(id__in=visible_post_ids).order_by('-published')
 
     # page number query parameter
@@ -118,7 +123,11 @@ def author_posts(request):
     posts = Post.objects.all()
 
     # get only visible posts
-    visible_post_ids = [post.id for post in posts if author_can_see_post(request.user, post)]
+    visible_post_ids = []
+    for post in author_posts:
+        if is_server_request(request) or author_can_see_post(request.user.url, post.serialize()):
+            visible_post_ids.append(post.id)
+
     visible_posts = posts.filter(id__in=visible_post_ids).order_by('-published')
 
     # page number query parameter

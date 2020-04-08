@@ -14,6 +14,7 @@ from ..utils import (
     is_valid_comment,
     insert_comment,
     author_can_see_post,
+    is_server_request
 )
 
 import json
@@ -186,7 +187,8 @@ def single_post(request, post_id):
     posts = Post.objects.filter(id=post_id)
 
     if posts.count() > 0:
-        if not author_can_see_post(request.user, posts[0]):
+        if (not is_server_request(request) and
+                not author_can_see_post(request.user.url, posts[0].serialize())):
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -296,7 +298,7 @@ def post_comments(request, post_id):
 
     post = posts[0]
 
-    if not author_can_see_post(request.user, post):
+    if not is_server_request(request) and not author_can_see_post(request.user.url, post.serialize()):
         response_body = {
             "query": "comments",
             "success": False,
@@ -372,13 +374,6 @@ def post_comments(request, post_id):
 
     # post a comment
     elif request.method == "POST":
-        if request.user.is_anonymous:
-            response_body = {
-                "query": "addComment",
-                "success": False,
-                "message": "You must login to post a comment",
-            }
-            return JsonResponse(response_body, status=403)
 
         request_body = json.loads(request.body)
 
@@ -392,20 +387,9 @@ def post_comments(request, post_id):
 
             return JsonResponse(response_body, status=400)
 
-        # check if comment author exists, 404 if not
-        authors = Author.objects.filter(
-            id=request_body["comment"]["author"]["id"])
-        if authors.count() == 0:
-            response_body = {
-                "query": "addComment",
-                "success": False,
-                "message": "Author does not exist",
-            }
-            return JsonResponse(response_body, status=404)
+        author_url = request_body["comment"]["author"]["id"]
 
-        author = authors[0]
-
-        if author != request.user:
+        if not is_server_request(request) and author_url != request.user.url:
             response_body = {
                 "query": "addComment",
                 "success": False,

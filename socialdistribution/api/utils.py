@@ -5,6 +5,7 @@ from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
 from profiles.utils import get_friend_urls_of_author
 from servers.models import Server
+from socialdistribution.utils import get_host
 
 from datetime import datetime
 import dateutil.parser
@@ -87,13 +88,7 @@ def author_to_dict(author):
 
 
 def comment_to_dict(comment):
-    return {
-        "author": author_to_dict(comment.author),
-        "comment": comment.comment,
-        "contentType": comment.contentType,
-        "published": comment.published.isoformat(),
-        "id": comment.id,
-    }
+    return comment.serialize
 
 
 def is_valid_post(post_dict):
@@ -237,7 +232,7 @@ def is_valid_comment(comment_dict):
 
 def insert_comment(post, comment_dict):
     # get the author specified by the comment
-    author = Author.objects.get(id=comment_dict["comment"]["author"]["id"])
+    author_url = comment_dict["comment"]["author"]["id"]
 
     if "published" in comment_dict["comment"].keys():
         comment_datetime = make_aware(
@@ -251,7 +246,7 @@ def insert_comment(post, comment_dict):
         comment=comment_dict["comment"]["comment"],
         published=comment_datetime,
         post=post,
-        author=author,
+        author=author_url,
         contentType=comment_dict["comment"]["contentType"]
     )
 
@@ -321,33 +316,40 @@ def validate_friend_request(request_dict):
     return 200
 
 
-def author_can_see_post(author, post):
-    if author.is_anonymous and post.visibility != "PUBLIC":
-        return False
-    if author == post.author:
+def author_can_see_post(author_url, post_dict):
+
+    post_author_url = post_dict["author"]["id"]
+
+    if author_url == post_author_url:
         return True
-    if post.visibility == "PUBLIC":
+
+    if (post_dict["visibility"] == "PUBLIC"):
         return True
-    if post.visibility == "PRIVATE" and author == post.author:
+
+    if (post_dict["visibility"] == "PRIVATE" and
+       author_url == post_author_url):
         return True
+
     # TODO: check this
-    if post.visibility == "SERVERONLY" and author.host == post.author.host:
+    if (post_dict["visibility"] == "SERVERONLY" and
+       get_host(author_url) in post_dict["author"]["host"]):
         return True
-    if post.visibility == "FRIENDS":
-        post_author_friends = get_friend_urls_of_author(post.author.url)
 
-        if author in post_author_friends:
-            return True
-    if post.visibility == "FOAF":
-        post_author_friends = get_friend_urls_of_author(post.author.url)
-        if author.url in post_author_friends:
+    if post_dict["visibility"] == "FRIENDS":
+        post_author_friends = get_friend_urls_of_author(post_author_url)
+        if author_url in post_author_friends:
             return True
 
-        author_friends = get_friend_urls_of_author(author.url)
+    if post_dict["visibility"] == "FOAF":
+        post_author_friends = get_friend_urls_of_author(post_author_url)
+
+        if author_url in post_author_friends:
+            return True
+
+        author_friends = get_friend_urls_of_author(author_url)
 
         author_friend_ids = set(author_friends)
-        post_author_friend_ids = set(
-            [post_author_friends])
+        post_author_friend_ids = set(post_author_friends)
 
         if len(author_friend_ids & post_author_friend_ids) > 0:
             return True
