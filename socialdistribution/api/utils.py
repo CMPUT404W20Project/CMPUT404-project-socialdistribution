@@ -330,9 +330,11 @@ def author_can_see_post(author_url, post_dict):
     if (post_dict["visibility"] == "PUBLIC"):
         return True
 
-    if (post_dict["visibility"] == "PRIVATE" and
-       author_url == post_author_url):
-        return True
+    if (post_dict["visibility"] == "PRIVATE"):
+        if author_url == post_author_url:
+            return True
+        elif author_url in post_dict["visibleTo"]:
+            return True
 
     # TODO: check this
     if (post_dict["visibility"] == "SERVERONLY" and
