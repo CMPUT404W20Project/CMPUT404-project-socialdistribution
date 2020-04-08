@@ -109,11 +109,22 @@ def edit_profile(request):
 def view_author_profile(request, author_id):
     author = Author.objects.get(id=author_id)
 
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            url = reverse('viewprofile')
+            return HttpResponseRedirect(url)
+
     template = 'vue/profile.html'
 
     context = {
-        'user_id': author.id
+        'user_id': author.id,
+        'form': form
     }
+
+
     return render(request, template, context)
 
     # old view here

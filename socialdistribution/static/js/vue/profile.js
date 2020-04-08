@@ -5,7 +5,8 @@ var vm = new Vue({
     data: function () {
         return {
             currentAuthor: {},
-            profileAuthor: {}
+            profileAuthor: {},
+            editing: false
         }
     },
     methods: {

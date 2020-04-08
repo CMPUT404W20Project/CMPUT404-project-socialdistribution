@@ -10,50 +10,66 @@
     {% verbatim %}
     <div class="card profile-card">
         <div class="card-body">
+            <div v-if="!editing">
+                <h1 id="profile-header" class="card-title">{{ nameForAuthor(profileAuthor) }}</h1>
 
-            <h1 id="profile-header" class="card-title">{{ nameForAuthor(profileAuthor) }}</h1>
+                <div class="profile-field" id="profile-id"
+                    v-if="Object.keys(profileAuthor).includes('id') && profileAuthor.id.length > 0">
+                    <p class="card-text">
+                        <b>User ID:</b>
+                        <br>
+                        {{ profileAuthor.id }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-displayName"
+                    v-if="Object.keys(profileAuthor).includes('displayName') && profileAuthor.displayName.length > 0">
+                    <p class="card-text">
+                        <b>Display Name:</b>
+                        <br>
+                        {{ profileAuthor.displayName }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-email"
+                    v-if="Object.keys(profileAuthor).includes('email') && profileAuthor.email.length > 0">
+                    <p class="card-text">
+                        <b>Email Address:</b>
+                        <br>
+                        {{ profileAuthor.email }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-bio"
+                    v-if="Object.keys(profileAuthor).includes('bio') && profileAuthor.bio.length > 0">
+                    <p class="card-text">
+                        <b>Bio:</b>
+                        <br>
+                        {{ profileAuthor.bio }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-github"
+                    v-if="Object.keys(profileAuthor).includes('github') && profileAuthor.github.length > 0">
+                    <p class="card-text">
+                        <b>GitHub:</b>
+                        <br>
+                        <a v-bind:href="profileAuthor.github">{{ profileAuthor.github }}</a>
+                    </p>
+                </div>
 
-            <div class="profile-field" id="profile-id" v-if="Object.keys(profileAuthor).includes('id') && profileAuthor.id.length > 0">
-                <p class="card-text">
-                    <b>User ID:</b>
-                    <br>
-                    {{ profileAuthor.id }}
-                </p>
+                <button type="button" v-if="profileAuthor.id == currentAuthor.id"
+                    v-on:click="editing = !editing" class="btn btn-primary"><i
+                        class="fas fa-edit"></i>Edit Profile</button>
+                <button type="button" v-if="profileAuthor.id != currentAuthor.id" v-on:click="addFriend()"
+                class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
             </div>
-            <div class="profile-field" id="profile-displayName" v-if="Object.keys(profileAuthor).includes('displayName') && profileAuthor.displayName.length > 0">
-                <p class="card-text">
-                    <b>Display Name:</b>
-                    <br>
-                    {{ profileAuthor.displayName }}
-                </p>
+            {% endverbatim %}
+            <div v-if="editing" class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" class="btn btn-primary" value="Save">
+                </form>
             </div>
-            <div class="profile-field" id="profile-email" v-if="Object.keys(profileAuthor).includes('email') && profileAuthor.email.length > 0">
-                <p class="card-text">
-                    <b>Email Address:</b>
-                    <br>
-                    {{ profileAuthor.email }}
-                </p>
-            </div>
-            <div class="profile-field" id="profile-bio" v-if="Object.keys(profileAuthor).includes('bio') && profileAuthor.bio.length > 0">
-                <p class="card-text">
-                    <b>Bio:</b>
-                    <br>
-                    {{ profileAuthor.bio }}
-                </p>
-            </div>
-            <div class="profile-field" id="profile-github" v-if="Object.keys(profileAuthor).includes('github') && profileAuthor.github.length > 0">
-                <p class="card-text">
-                    <b>GitHub:</b>
-                    <br>
-                    <a v-bind:href="profileAuthor.github">{{ profileAuthor.github }}</a>
-                </p>
-            </div>
-
-            <button type="button" v-if="profileAuthor.id == currentAuthor.id" v-on:click="window.location.replace('/editprofile');" class="btn btn-primary"><i class="fas fa-edit"></i>Edit Profile</button>
-            <button type="button" v-if="profileAuthor.id != currentAuthor.id" v-on:click="addFriend()" class="btn btn-primary"><i class="fas fa-user-friends"></i>Add Friend</button>
         </div>
     </div>
-    {% endverbatim %}
 </div>
 
 <!-- CSS -->
