@@ -107,7 +107,12 @@ var vm = new Vue({
                 });
         },
         refreshGithubActivity: function(author) {
-            alert("implement this!");
+            const url = "/api/author/github";
+
+            // refresh github activity
+            fetch(url).then((response) => {
+                this.getPosts();
+            })
         }
     },
     // runs when the vue app is created
