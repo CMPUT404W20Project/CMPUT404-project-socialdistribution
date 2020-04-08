@@ -36,6 +36,29 @@ def index(request):
 @csrf_exempt
 @login_required
 def new_post(request):
+    # author = request.user
+    # template = 'vue/new_post.html'
+    # form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
+    # friendList = getFriendsOfAuthor(author)
+
+    # context = {
+    #     'form': form,
+    #     'author': author,
+    #     'friendList': friendList
+    # }
+
+    # if request.method == 'POST':
+    #     if form.is_valid():
+    #         new_content = form.save(commit=False)
+    #         cont_type = form.cleaned_data['contentType']
+    #         if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
+    #             img = form.cleaned_data['image_file']
+    #             new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
+    #         new_content.save()
+    #         url = reverse('index')
+    #         return HttpResponseRedirect(url)
+
+    # return render(request, template, context)
 
     author = request.user
     template = 'posts/posts_form.html'

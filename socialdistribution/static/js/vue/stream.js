@@ -105,6 +105,9 @@ var vm = new Vue({
                     // console.log(json);
                     this.getPosts();
                 });
+        },
+        refreshGithubActivity: function(author) {
+            alert("implement this!");
         }
     },
     // runs when the vue app is created

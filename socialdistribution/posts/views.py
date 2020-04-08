@@ -83,6 +83,7 @@ def view_post(request, post_id):
 
     template = 'vue/post.html'
 
+    # TODO: add friends functionality, like the old one had
     context = {
         'post_id': post_id,
         'form': form,

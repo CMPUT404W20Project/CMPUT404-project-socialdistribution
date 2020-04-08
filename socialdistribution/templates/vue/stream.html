@@ -20,6 +20,14 @@
         </div>
     </div> -->
 
+    <div class="card post-card">
+        <div class="card-body">
+            <h3 class="card-title">Post Stream</h3>
+            <button type="button" v-on:click="getPosts()" class="btn btn-primary"><i class="fas fa-sync"></i>Refresh Posts</button>
+            <button type="button" v-on:click="refreshGithubActivity(currentAuthor)" class="btn btn-primary"><i class="fab fa-github"></i>Refresh GitHub Activity</button>
+        </div>
+    </div>
+
     <!-- create one of these divs for each post in data.posts -->
     <div v-for="post in posts">
         <div class="card post-card">

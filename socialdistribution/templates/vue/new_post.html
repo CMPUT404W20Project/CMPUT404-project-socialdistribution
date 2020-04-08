@@ -1,0 +1,61 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+{{ form.media }}
+{% load bootstrap4 %}
+{% bootstrap_javascript jquery='full' %}
+
+<!--NEW POST-->
+<div class="container" id="new-post">
+    <div>
+        <div class="card post-card">
+            <form method="POST" enctype="multipart/form-data">
+
+                {% csrf_token %}
+
+                <p>Author: {{ form.author }}</p>
+                <p>Title: {{ form.title }}</p>
+                <p>Content: {{ form.content }}</p>
+                <p><i class="fas fa-file-image"></i>Image: {{ form.image_file }}</p>
+                <p>Unlisted: {{ form.unlisted }}</p>
+                <p>Content Type: {{ form.contentType }}</p>
+                <p> Categories: <input type="text" data-role="tagsinput" class="form-control" name="categories"><br></p>
+                <p>Published: {{ form.published }}</p>
+                <p>Visiblity: {{ form.visibility }}</p>
+                <p>Visible To: {{ form.visibleTo }}</p>
+
+                <input type="submit" class="btn btn-primary" value="submit">
+
+                <span style="margin-left: 33%; margin-right: 33%; display:inline-block;">
+                    {{ form.published }}</span><br>
+                <span class="fa fa-users" id="post-visibility" style="margin-left: -45%;">
+                    {{ form.visibility }}</span><br>
+
+                <button class="open-visibileTo-button" type="button"
+                    style="visibility: hidden;margin-left: -45%;">visibileTo</button>
+                <span style="display: none;">{{ form.visibleTo }}</span>
+                <br>
+                <input type="submit" class="btn btn-primary" value="submit">
+            </form>
+
+            <div class="form-popup" id="myForm" style="display: none; outline: 1px solid blue;">
+                <button class="close-visibileTo-button" type="button">CLOSE</button>
+                <form class="form-container">
+                    <h3>Visible To</h3>
+                    {% for friend in friendList %}
+                    <input type="checkbox" value="{{ friend.friend.url }}"
+                        class="visibile-to-friends">{{ friend.friend }}</input>
+                    {% endfor %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS -->
+<link rel="stylesheet" href="{% static 'css/vue/new_post.css' %}">
+
+<!-- JS -->
+<script defer type="text/javascript" src="{% static 'js/vue/new_post.js' %}"></script>
+
+{% endblock content %}
