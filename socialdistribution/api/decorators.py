@@ -26,6 +26,7 @@ def check_auth(view):
                 uname, passwd = base64.b64decode(auth[1]).decode('utf-8').split(':', 1)
 
                 if authenticate_server(username=uname, password=passwd):
+                    request.server_id = uname
                     return view(request, *args, **kwargs)
 
                 # Check if user exists
