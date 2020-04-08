@@ -17,7 +17,7 @@ var vm = new Vue({
             fetch(url)
                 .then(response => response.json())
                 .then(json => {
-                    this.currentAuthor = json;
+                    this.currentAuthor = json["author"];
                 });
         },
         addFriend: function() {

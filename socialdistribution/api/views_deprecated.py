@@ -912,11 +912,11 @@ def who_am_i(request):
         response_body = "Anonymous user (unauthenticated)"
     else:
         response_body = author_to_dict(request.user)
-        response_body["id"] = author_to_dict(request.user)["url"]
+        # response_body["id"] = author_to_dict(request.user)["url"]
 
-        response_body["friends"] = [
-            author_to_dict(friend.friend) for friend in getFriendsOfAuthor(request.user)
-        ]
+        # response_body["friends"] = [
+        #     author_to_dict(friend.friend) for friend in getFriendsOfAuthor(request.user)
+        # ]
 
     return JsonResponse(response_body)
 
