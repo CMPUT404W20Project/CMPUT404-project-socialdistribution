@@ -8,7 +8,8 @@ from ..decorators import check_auth
 from ..utils import (
     author_can_see_post,
     author_to_dict,
-    is_server_request
+    is_server_request,
+    post_to_dict
 )
 
 
@@ -33,7 +34,7 @@ def can_see(request, author_id, post_id):
     author = Author.objects.get(id=author_id)
     post = Post.objects.get(id=post_id)
 
-    if author_can_see_post(author.url, post.serialize()):
+    if author_can_see_post(author.url, post_to_dict(post)):
         return JsonResponse({"cansee": True})
     else:
         return JsonResponse({"cansee": False})

@@ -7,6 +7,8 @@ from ..decorators import check_auth
 from profiles.models import Author
 from posts.models import Post
 from profiles.utils import get_friend_profiles_of_author
+from posts.utils import get_posts
+from socialdistribution.utils import get_hostname
 from ..utils import (
     post_to_dict,
     author_to_dict,
@@ -43,7 +45,7 @@ def specific_author_posts(request, author_id):
     # get only visible posts
     visible_post_ids = []
     for post in author_posts:
-        if is_server_request(request) or author_can_see_post(request.user.url, post.serialize()):
+        if is_server_request(request) or author_can_see_post(request.user.url, post_to_dict(post)):
             visible_post_ids.append(post.id)
 
     visible_author_posts = author_posts.filter(id__in=visible_post_ids).order_by('-published')
@@ -93,7 +95,7 @@ def specific_author_posts(request, author_id):
         "query": "posts",
         "count": paginator.count,
         "size": int(page_size),
-        "posts": [post_to_dict(post, request) for post in page_obj],
+        "posts": [post_to_dict(post) for post in page_obj],
     }
 
     # give a url to the next page if it exists
@@ -120,15 +122,17 @@ def author_posts(request):
         }
         return JsonResponse(response_body, status=405)
 
-    posts = Post.objects.all()
+    all_local_remote_posts = get_posts()
 
     # get only visible posts
-    visible_post_ids = []
-    for post in author_posts:
-        if is_server_request(request) or author_can_see_post(request.user.url, post.serialize()):
-            visible_post_ids.append(post.id)
-
-    visible_posts = posts.filter(id__in=visible_post_ids).order_by('-published')
+    filtered_posts = []
+    for post in all_local_remote_posts:
+        if is_server_request(request) or author_can_see_post(request.user.url, post):
+            hostname = get_hostname()
+            if hostname[-1] != "/":
+                hostname += "/"
+            post["source"] = hostname + "/api/author/posts"
+            filtered_posts.append(post)
 
     # page number query parameter
     page_number = request.GET.get("page")
@@ -154,7 +158,7 @@ def author_posts(request):
         return JsonResponse(response_body, status=400)
 
     # paginates our QuerySet
-    paginator = Paginator(visible_posts, page_size)
+    paginator = Paginator(filtered_posts, page_size)
 
     # bad page number
     if page_number < 0 or page_number >= paginator.num_pages:
@@ -175,7 +179,7 @@ def author_posts(request):
         "query": "posts",
         "count": paginator.count,
         "size": int(page_size),
-        "posts": [post_to_dict(post, request) for post in page_obj],
+        "posts": [post for post in page_obj],
     }
 
     # give a url to the next page if it exists
@@ -208,7 +212,6 @@ def author_profile(request, author_id):
         author = authors[0]
 
         response_body = author_to_dict(author)
-        response_body["id"] = author_to_dict(author)["url"]
 
         # Might cause issues since these could be remote authors
         response_body["friends"] = get_friend_profiles_of_author(author.url)

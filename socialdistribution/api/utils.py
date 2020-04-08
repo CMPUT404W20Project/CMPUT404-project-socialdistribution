@@ -5,7 +5,7 @@ from profiles.models import Author, AuthorFriend
 from posts.models import Post, Comment
 from profiles.utils import get_friend_urls_of_author
 from servers.models import Server
-from socialdistribution.utils import get_host
+from socialdistribution.utils import get_host, get_hostname
 
 from datetime import datetime
 import dateutil.parser
@@ -25,7 +25,7 @@ def authenticate_server(username, password):
         return False
 
 
-def post_to_dict(post, request):
+def post_to_dict(post):
     comments = Comment.objects.filter(post=post).order_by("-published")
 
     page_size = 50
@@ -40,8 +40,8 @@ def post_to_dict(post, request):
 
     post_dict = {
         "title": post.title,
-        "source": "POST HAS NO ATTRIBUTE SOURCE",
-        "origin": "POST HAS NO ATTRIBUTE ORIGIN",
+        "source": post.source,
+        "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
         "content": post.content,
@@ -60,35 +60,21 @@ def post_to_dict(post, request):
     # give a url to the next page if it exists
     if page_obj.has_next():
         next_uri = f"/api/posts/{post.id}/comments?page={page_obj.next_page_number() - 1}"
-        post_dict["next"] = request.build_absolute_uri(next_uri)
+        hostname = get_hostname()
+        if hostname[-1] == "/":
+            hostname = hostname[:-1]
+
+        post_dict["next"] = hostname + next_uri
 
     return post_dict
 
 
 def author_to_dict(author):
-    author_dict = {
-        "id": author.id,
-        "url": author.url,
-        "host": author.host,
-        "displayName": author.displayName,
-    }
-
-    if author.github:
-        author_dict["github"] = author.github
-    if author.firstName:
-        author_dict["firstName"] = author.firstName
-    if author.lastName:
-        author_dict["lastName"] = author.lastName
-    if author.email:
-        author_dict["email"] = author.email
-    if author.bio:
-        author_dict["bio"] = author.bio
-
-    return author_dict
+    return author.serialize()
 
 
 def comment_to_dict(comment):
-    return comment.serialize
+    return comment.serialize()
 
 
 def is_valid_post(post_dict):

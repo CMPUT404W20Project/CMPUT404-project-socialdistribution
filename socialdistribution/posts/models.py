@@ -74,10 +74,10 @@ class Post(models.Model):
 
     def serialize(self):
 
-        fields = ["title", "source", "origin", "description",
-                  "contentType", "content", "author", "categories",
-                  "published", "id", "visibility", "visibleTo", "unlisted",
-                  ]
+        fields = ["title", "source", "origin", "description", "content"
+                  "contentType", "author", "categories", "comments",
+                  "published", "id", "visibility", "visibleTo", "unlisted"]
+
         post = dict()
         for field in fields:
             if field == "author":
@@ -87,6 +87,12 @@ class Post(models.Model):
             elif field == "categories":
                 if self.categories != "":
                     post["categories"] = self.categories.split(',')
+            elif field == "comments":
+                comments = Comment.objects.filter(post=self).order_by("-published")
+                post["comments"] = [comment.serialize() for comment in comments]
+            # elif field == "visibleTo":
+            #     post["visibleTo"] = self.visibleTo.to_python
+            #     pass
             else:
                 post[field] = str(getattr(self, field))
 

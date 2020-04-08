@@ -87,10 +87,13 @@ class Author(AbstractBaseUser, PermissionsMixin):
 
     def serialize(self):
         fields = ["id", "email", "firstName", "lastName", "displayName", "bio",
-                  "host", "github", "profile_img"]
+                  "host", "github", "profile_img", "url"]
         author = dict()
         for field in fields:
-            author[field] = str(getattr(self, field))
+            if field == "id":
+                author["id"] = self.url
+            else:
+                author[field] = str(getattr(self, field))
 
         return author
 

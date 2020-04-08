@@ -5,7 +5,6 @@ from django.urls import reverse
 from .models import Post, Comment
 from .forms import CommentForm, PostForm
 from django.contrib.auth.decorators import login_required
-from django.core import serializers
 from profiles.utils import get_friend_urls_of_author, get_friend_profiles_of_author
 from .utils import get_public_posts_from_remote_servers
 import base64

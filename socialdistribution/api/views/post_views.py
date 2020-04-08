@@ -72,7 +72,7 @@ def posts(request):
             "query": "posts",
             "count": paginator.count,
             "size": int(page_size),
-            "posts": [post_to_dict(post, request) for post in page_obj],
+            "posts": [post_to_dict(post) for post in page_obj],
         }
 
         # give a url to the next page if it exists
@@ -100,9 +100,9 @@ def posts(request):
             }
             return JsonResponse(response_body, status=400)
 
-        author = Author.objects.get(id=request_body["author"]["id"])
+        author_url = request_body["author"]["id"]
         # wrong author
-        if author != request.user:
+        if not is_server_request(request) and author_url != request.user.url:
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -124,7 +124,7 @@ def posts(request):
         # valid post --> insert to DB
         post = insert_post(request_body)
 
-        return JsonResponse(post_to_dict(post, request))
+        return JsonResponse(post_to_dict(post))
 
     # insert new post
     # note: PUT requires an ID whereas POST does not
@@ -140,9 +140,9 @@ def posts(request):
             }
             return JsonResponse(response_body, status=400)
 
-        author = Author.objects.get(id=request_body["author"]["id"])
+        author_url = request_body["author"]["id"]
         # wrong author
-        if author != request.user:
+        if not is_server_request(request) and author_url != request.user.url:
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -171,7 +171,7 @@ def posts(request):
         # valid post --> insert to DB
         post = insert_post(request_body)
 
-        return JsonResponse(post_to_dict(post, request))
+        return JsonResponse(post_to_dict(post))
 
     # invalid method
     response_body = {
@@ -188,7 +188,7 @@ def single_post(request, post_id):
 
     if posts.count() > 0:
         if (not is_server_request(request) and
-                not author_can_see_post(request.user.url, posts[0].serialize())):
+                not author_can_see_post(request.user.url, post_to_dict(posts[0]))):
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -218,7 +218,7 @@ def single_post(request, post_id):
     if request.method == "GET" and posts.count() > 0:
         response_body = {
             "query": "posts",
-            "post": post_to_dict(posts[0], request)
+            "post": post_to_dict(posts[0])
         }
 
         return JsonResponse(response_body)
@@ -227,7 +227,7 @@ def single_post(request, post_id):
     if request.method == "PUT" and posts.count() > 0:
         post_to_update = posts[0]
 
-        if post_to_update.author != request.user:
+        if not is_server_request(request) and post_to_update.author.url != request.user.url:
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -249,13 +249,13 @@ def single_post(request, post_id):
         # valid post --> update existing post
         post = update_post(post_to_update, request_body)
 
-        return JsonResponse(post_to_dict(post, request))
+        return JsonResponse(post_to_dict(post))
 
     # delete a post
     if request.method == "DELETE" and posts.count() > 0:
         post = posts[0]
 
-        if post.author != request.user:
+        if not is_server_request(request) and post.author.url != request.user.url:
             response_body = {
                 "query": "posts",
                 "success": False,
@@ -298,7 +298,7 @@ def post_comments(request, post_id):
 
     post = posts[0]
 
-    if not is_server_request(request) and not author_can_see_post(request.user.url, post.serialize()):
+    if not is_server_request(request) and not author_can_see_post(request.user.url, post_to_dict(post)):
         response_body = {
             "query": "comments",
             "success": False,
