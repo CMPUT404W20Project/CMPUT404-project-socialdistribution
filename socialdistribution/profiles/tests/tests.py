@@ -168,40 +168,4 @@ class ProfilesTest(TestCase):
         logout_stream = client.get('/accounts/password_change/')
         self.assertTrue(logout_stream.status_code == 302)
         self.assertTrue("/accounts/login" in logout_stream.url)
-    # Will implement view tests in the future
-
-    def test_accept_friend(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_reject_friend(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_my_friends(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_my_friend_requests(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_my_friend_following(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_view_author_profile(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_view_profile(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_edit_profile(self):
-        pass
-
-    # Will implement view tests in the future
-    def test_new_post(self):
-        pass
-# Create your tests here.
+  
