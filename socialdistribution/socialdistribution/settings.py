@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-HOSTNAME = "http://127.0.0.1:8000/"
+HOSTNAME = "https://cmput404w20t05.herokuapp.com/"
 AUTH_USER_MODEL = 'profiles.Author'
 # Application definition
 
