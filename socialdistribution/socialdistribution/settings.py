@@ -143,3 +143,5 @@ LOGIN_REDIRECT_URL = '/stream'
 BOOTSTRAP4 = {
     'include_jquery': True,
 }
+
+django_heroku.settings(locals())
