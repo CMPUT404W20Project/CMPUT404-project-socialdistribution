@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import django_heroku 
 import os
-<<<<<<< HEAD
 import mimetypes
 
 mimetypes.add_type("text/css", ".css", True)
