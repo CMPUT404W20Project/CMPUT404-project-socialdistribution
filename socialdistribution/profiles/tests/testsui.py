@@ -132,3 +132,14 @@ class ProfilesUITests(StaticLiveServerTestCase):
 
         # self.assertTrue('/stream/' in redirect)
        
+
+        def test_add_post(self):
+
+            pass
+    
+        def test_make_comment(self):
+            pass
+
+        def test_make_friend_request(self):
+            pass
+    
