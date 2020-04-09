@@ -20,6 +20,8 @@ password:demo
 ```
 * API endpoint: [API Documentation](https://github.com/CMPUT404W20Project/CMPUT404-project-socialdistribution/wiki/API-Documentation)
 
+![](https://github.com/CMPUT404W20Project/database/blob/master/404project.gif)
+
 Setup guide
 ===========
 1. Create an empty directory and cd into it
