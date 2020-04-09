@@ -1,4 +1,4 @@
-from profiles.models import Author
+from profiles.models import Author, AuthorFriend
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 from unittest import skip
@@ -25,7 +25,6 @@ class ProfilesUITests(StaticLiveServerTestCase):
         cls.selenium.quit()
         super().tearDownClass()
 
-    @skip("For now")
     def test_can_signup(self):
         email = "test@gmail.com"
         firstName = "TestFirst"
@@ -50,7 +49,6 @@ class ProfilesUITests(StaticLiveServerTestCase):
         redirect = self.selenium.current_url
         self.assertTrue('/accounts/login/' in redirect)
 
-    @skip("For now")
     # User who didn't have a valid account logins
     def test_cannot_login(self):
         self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login/'))
@@ -68,7 +66,6 @@ class ProfilesUITests(StaticLiveServerTestCase):
 
         self.assertEquals("Your username and password didn't match. Please try again.", error_string)
 
-    @skip("For now")
     # User who had a valid account logins
     def test_can_login(self):
         email = "test@gmail.com"
@@ -99,10 +96,9 @@ class ProfilesUITests(StaticLiveServerTestCase):
         redirect = self.selenium.current_url
         self.assertTrue('/stream/' in redirect)
 
-    @skip("For now")
     #Created account that is set to inactive should not be able to login.
     def test_inactive_account(self):
-        email = "trial@trial.com"
+        email = "trial23@trial.com"
         password = "trythis1"
         is_active = False
         inactive_user = self.create_author(email, "first name", "last name", "display name", "http://host.com/80/", password, is_active, "http://girhub.com", "hello")
@@ -130,16 +126,32 @@ class ProfilesUITests(StaticLiveServerTestCase):
 
         self.assertEquals("Your username and password didn't match. Please try again.", error_string)
 
-        # self.assertTrue('/stream/' in redirect)
-       
 
-        def test_add_post(self):
+    def test_make_friend_request(self):
+        email = "trial4@trial.com"
+        password = "trythis1"
+        is_active = True
+        user1 = self.create_author(email, "first name", "last name", "display name", 
+                        "http://host.com/80/", password, is_active, "http://girhub.com", "hello")
 
-            pass
-    
-        def test_make_comment(self):
-            pass
+        email1 = "trial15@trial.com"
+        password1 = "trythis1"
+        is_active = True
+        user2 = self.create_author(email1, "first name", "last name", "display name", 
+                        "http://host.com/80/", password1, is_active, "http://girhub.com", "hello")
 
-        def test_make_friend_request(self):
-            pass
-    
+        print(user1.id)
+        print("HELLO IN THIS TEST")
+
+        #Login
+        self.selenium.get('%s%s' % (self.live_server_url, '/accounts/login'))
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys(email)
+        password_input = self.selenium.find_element_by_name("password")
+        password_input.send_keys(password)
+        self.selenium.find_element_by_xpath('//button[@value="Login"]').click()
+
+        #Make friend request
+        friend_request = AuthorFriend.objects.create(author = user1, friend = user2)  
+
+        self.assertTrue(AuthorFriend.objects.count() != 0)  
