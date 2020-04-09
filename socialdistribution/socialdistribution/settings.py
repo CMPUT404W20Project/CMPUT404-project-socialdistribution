@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import django_heroku 
 import os
+<<<<<<< HEAD
 import mimetypes
 
 mimetypes.add_type("text/css", ".css", True)
@@ -35,6 +36,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+HOSTNAME = "https://cmput404w20t05.herokuapp.com/"
 AUTH_USER_MODEL = 'profiles.Author'
 # Application definition
 

@@ -13,19 +13,19 @@
              <div class="friend-list">
                 <!--start friend image-->
                 <a class="friend-author-img">
-                <img src="/media/{{ friend.author.profile_img }}" alt="">
+                <!-- <img src="/media/{{ friend.author.profile_img }}" alt=""> -->
                 </a>
                 <!--end friend image-->
                 <!--start friend name-->
                 <div class="friend-author-name">
-                   <a class="text-inverse" href="author/{{ friend.author.id }}/profile">{{ friend.author }}</a>
+                   <a class="text-inverse" href="{{ friend.id }}/profile">{{ friend.displayName }}</a>
                 </div>
                 <!--end friend name-->
                 <!--start friend body-->
                 <div class="friend-author-body">
                    <div class="btn-group dropdown">
-                      <a href="/friends/accept/{{friend.author.id}}" class="btn btn-default">Accept</a>
-                      <a href="/friends/reject/{{friend.author.id}}" class="btn btn-default">Reject</a>
+                      <a href="/friends/accept/{{friend.id}}" class="btn btn-default">Accept</a>
+                      <a href="/friends/reject/{{friend.id}}" class="btn btn-default">Reject</a>
                    </div>
                 </div>
                 <!--end friend body-->

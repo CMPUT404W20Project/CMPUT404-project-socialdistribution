@@ -1,0 +1,89 @@
+{% extends "./base.html" %}
+{% load static %}
+{% block content %}
+
+<!--PROFILE-->
+<div class="container" id="profile">
+    <input type="hidden" id="user-id" name="user-id" value="{{ user_id }}">
+
+    <!-- this means Django won't render this part -->
+    <div class="card profile-card">
+        <div class="card-body">
+            {% if editable %}
+            <div v-if="!editing">
+            {% else %}
+            <div>
+            {% endif %}
+            {% verbatim %}
+                <h1 id="profile-header" class="card-title">{{ nameForAuthor(profileAuthor) }}</h1>
+
+                <div class="profile-field" id="profile-id"
+                    v-if="Object.keys(profileAuthor).includes('id') && profileAuthor.id.length > 0">
+                    <p class="card-text">
+                        <b>User ID:</b>
+                        <br>
+                        {{ profileAuthor.id }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-displayName"
+                    v-if="Object.keys(profileAuthor).includes('displayName') && profileAuthor.displayName.length > 0">
+                    <p class="card-text">
+                        <b>Display Name:</b>
+                        <br>
+                        {{ profileAuthor.displayName }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-email"
+                    v-if="Object.keys(profileAuthor).includes('email') && profileAuthor.email.length > 0">
+                    <p class="card-text">
+                        <b>Email Address:</b>
+                        <br>
+                        {{ profileAuthor.email }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-bio"
+                    v-if="Object.keys(profileAuthor).includes('bio') && profileAuthor.bio.length > 0">
+                    <p class="card-text">
+                        <b>Bio:</b>
+                        <br>
+                        {{ profileAuthor.bio }}
+                    </p>
+                </div>
+                <div class="profile-field" id="profile-github"
+                    v-if="Object.keys(profileAuthor).includes('github') && profileAuthor.github.length > 0">
+                    <p class="card-text">
+                        <b>GitHub:</b>
+                        <br>
+                        <a v-bind:href="profileAuthor.github">{{ profileAuthor.github }}</a>
+                    </p>
+                </div>
+                {% endverbatim %}
+
+                {% if editable %}
+                <button type="button" v-on:click="editing = true" class="btn btn-primary"><i
+                        class="fas fa-edit"></i>Edit Profile</button>
+                {% else %}
+                <button type="button" v-on:click="addFriend()" class="btn btn-primary"><i
+                        class="fas fa-user-friends"></i>Add Friend</button>
+                {% endif %}
+            </div>
+            {% if editable %}
+            <div v-if="editing">
+                <h1 class="card-title">Edit Profile</h1>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type="submit" class="btn btn-primary" value="Save">
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/vue/profile.css' %}">
+
+    <!-- JS -->
+    <script defer type="text/javascript" src="{% static 'js/vue/profile.js' %}"></script>
+
+    {% endblock content %}

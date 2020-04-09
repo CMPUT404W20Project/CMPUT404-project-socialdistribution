@@ -1,31 +1,23 @@
 import requests
-from urllib.parse import urljoin
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import Timeout
 from servers.models import Server
-
+from servers.utils import get_api_request_url
+from socialdistribution.utils import validate_instance
+from api.utils import post_to_dict
+from posts.models import Post
 
 PUBLIC_POSTS_ENDPOINT = "posts"
+ALL_POSTS_ENDPOINT = "author/posts"
 CONNECTION_TIMEOUT_LIMIT = 10
 READ_TIMEOUT_LIMIT = 20
 
-AUTHOR_FIELDS = ["id", "host", "displayName", "url", "github"]
+AUTHOR_FIELDS = ["id", "host", "displayName", "url"]
 COMMENT_FIELDS = ["author", "comment", "contentType", "published", "id"]
-POST_FIELDS = ["title", "source", "origin", "description", "contentType",
-               "author", "categories", "count", "size", "next", "comments",
-               "published", "id", "visibility", "visibleTo", "unlisted"]
-
-
-
-def validate_instance(instance, fields, type):
-    if not isinstance(instance, dict):
-        print("instance not a dictionary")
-        return False
-    for field in fields:
-        if field not in instance:
-            print("%s not in %s" % (field, type))
-            return False
-    return True
+POST_FIELDS = ["title", "source", "origin", "description", "content",
+               "contentType", "author", "categories", "count", "size",
+               "comments", "published", "id", "visibility", "visibleTo",
+               "unlisted"]
 
 
 def validate_remote_post_response(post):
@@ -45,24 +37,19 @@ def validate_remote_post_response(post):
     return True
 
 
-def get_api_request_url(server_api, server_endpoint):
-    return urljoin(server_api, server_endpoint)
-
-
-def get_public_posts_from_remote_server(server):
+def get_posts_from_remote_server(server, endpoint):
 
     server_api_location = server.api_location
     server_user = server.remote_server_user
     server_pass = server.remote_server_pass
 
     api_request_url = get_api_request_url(server_api_location,
-                                          PUBLIC_POSTS_ENDPOINT)
+                                          endpoint)
 
     try:
         response = requests.get(
             api_request_url,
-            auth=HTTPBasicAuth(server_user, server_pass),
-            timeout=(CONNECTION_TIMEOUT_LIMIT, READ_TIMEOUT_LIMIT)
+            auth=HTTPBasicAuth(server_user, server_pass)
         )
 
         if response.status_code != 200:
@@ -98,9 +85,37 @@ def get_public_posts_from_remote_servers():
     servers = Server.objects.all()
     posts = []
     for server in servers:
-        server_posts = get_public_posts_from_remote_server(server)
+        server_posts = get_posts_from_remote_server(server, PUBLIC_POSTS_ENDPOINT)
         if server_posts:
             for post in server_posts:
                 posts.append(post)
 
     return posts
+
+
+def get_local_posts():
+    local_posts_list = []
+    local_posts = Post.objects.all().order_by('-published')
+
+    for post in local_posts:
+        local_posts_list.append(post_to_dict(post))
+
+    return local_posts_list
+
+
+def get_remote_posts():
+    servers = Server.objects.all()
+    remote_posts_list = []
+    for server in servers:
+        server_posts = get_posts_from_remote_server(server, ALL_POSTS_ENDPOINT)
+        if server_posts:
+            for post in server_posts:
+                remote_posts_list.append(post)
+
+    return remote_posts_list
+
+
+def get_posts():
+    local_posts = get_local_posts()
+    remote_posts = [] # get_remote_posts()
+    return local_posts + remote_posts

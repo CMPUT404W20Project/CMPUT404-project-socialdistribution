@@ -8,14 +8,28 @@ class ProfileForm(forms.ModelForm):
 
     class Meta:
         model = Author
+        labels = {
+            'firstName': 'First Name',
+            'lastName': 'Last Name',
+            'displayName': 'Display Name',
+            'bio': 'Bio',
+            'github': 'GitHub URL'
+        }
         fields = [
             'firstName',
             'lastName',
             'displayName',
             'bio',
-            'github',
-            'profile_img',
+            'github'        
         ]
+        # fields = [
+        #     'firstName',
+        #     'lastName',
+        #     'displayName',
+        #     'bio',
+        #     'github',
+        #     'profile_img',
+        # ]
 
 class ProfileSignup(UserCreationForm):
     password1 = forms.CharField(label=False,
@@ -39,7 +53,7 @@ class ProfileSignup(UserCreationForm):
 
     class Meta:
         model = Author
-        fields = ['firstName', 'lastName', 'email', 'password1', 'password2']
+        fields = ['firstName', 'lastName', 'email', 'password1', 'password2', 'displayName']
         widgets = {
                     'firstName': TextInput(
                                     attrs={
@@ -59,10 +73,17 @@ class ProfileSignup(UserCreationForm):
                                         'placeholder': 'Gmail'
                                         }
                                     ),
+                    'displayName': TextInput(
+                                    attrs={
+                                        'class': 'form-control custom',
+                                        'placeholder': 'Display Name'
+                                        }
+                                    ),
         }
 
         labels = {
                     'firstName': False,
                     'lastName': False,
                     'email': False,
+                    'displayName': False,
         }

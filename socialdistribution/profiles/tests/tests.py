@@ -2,8 +2,8 @@ import uuid
 from django.test import TestCase
 from profiles.models import Author, AuthorFriend
 from faker import Faker
-from profiles.utils import getAuthorFriendRelationships, getFriendsOfAuthor,\
-                    getFriendRequestsToAuthor, getFriendRequestsFromAuthor,\
+from profiles.utils import getAuthorFriendRelationships, get_friend_urls_of_author,\
+                    get_friend_requests_to_author, get_friend_requests_from_author,\
                     isFriend
 from django.test import Client
 from django.contrib.auth import get_user_model
@@ -75,19 +75,19 @@ class ProfilesTest(TestCase):
         author1 = self.create_author()
         author2 = self.create_author()
         author3 = self.create_author()
-        AuthorFriend.objects.create(author=author1, friend=author2)
-        AuthorFriend.objects.create(author=author2, friend=author1)
-        AuthorFriend.objects.create(author=author3, friend=author2)
-        author2_friends = getFriendsOfAuthor(author2)
+        AuthorFriend.objects.create(author=author1.url, friend=author2.url)
+        AuthorFriend.objects.create(author=author2.url, friend=author1.url)
+        AuthorFriend.objects.create(author=author3.url, friend=author2.url)
+        author2_friends = get_friend_urls_of_author(author2.url)
 
         # We should be returning a query object, but right now it is a list
         # Should refactor moving forward
         author2_friends_with_author1 = False
         author2_friends_with_author3 = False
         for author_friend in author2_friends:
-            if author1 == author_friend.friend:
+            if author1.url == author_friend:
                 author2_friends_with_author1 = True
-            if author3 == author_friend.friend:
+            if author3.url == author_friend:
                 author2_friends_with_author3 = True
 
         self.assertTrue(author2_friends_with_author1)
@@ -97,19 +97,19 @@ class ProfilesTest(TestCase):
         author1 = self.create_author()
         author2 = self.create_author()
         author3 = self.create_author()
-        AuthorFriend.objects.create(author=author1, friend=author2)
-        AuthorFriend.objects.create(author=author2, friend=author1)
-        AuthorFriend.objects.create(author=author3, friend=author2)
-        author2_friend_requests = getFriendRequestsToAuthor(author2)
+        AuthorFriend.objects.create(author=author1.url, friend=author2.url)
+        AuthorFriend.objects.create(author=author2.url, friend=author1.url)
+        AuthorFriend.objects.create(author=author3.url, friend=author2.url)
+        author2_friend_requests = get_friend_requests_to_author(author2.url)
 
         # We should be returning a query object, but right now it is a list
         # Should refactor moving forward
         author1_friend_request_to_author2 = False
         author3_friend_request_to_author2 = False
         for author_friend in author2_friend_requests:
-            if author1 == author_friend.author:
+            if author1.url == author_friend:
                 author1_friend_request_to_author2 = True
-            if author3 == author_friend.author:
+            if author3.url == author_friend:
                 author3_friend_request_to_author2 = True
 
         self.assertFalse(author1_friend_request_to_author2)
@@ -119,19 +119,19 @@ class ProfilesTest(TestCase):
         author1 = self.create_author()
         author2 = self.create_author()
         author3 = self.create_author()
-        AuthorFriend.objects.create(author=author1, friend=author2)
-        AuthorFriend.objects.create(author=author2, friend=author1)
-        AuthorFriend.objects.create(author=author3, friend=author2)
-        author3_sent_friend_requests = getFriendRequestsFromAuthor(author3)
+        AuthorFriend.objects.create(author=author1.url, friend=author2.url)
+        AuthorFriend.objects.create(author=author2.url, friend=author1.url)
+        AuthorFriend.objects.create(author=author3.url, friend=author2.url)
+        author3_sent_friend_requests = get_friend_requests_from_author(author3.url)
 
         # We should be returning a query object, but right now it is a list
         # Should refactor moving forward
         author3_friend_request_to_author2 = False
         author3_friend_request_to_author1 = False
         for author_friend in author3_sent_friend_requests:
-            if author2 == author_friend.friend:
+            if author2.url == author_friend:
                 author3_friend_request_to_author2 = True
-            if author1 == author_friend.friend:
+            if author1.url == author_friend:
                 author3_friend_request_to_author2 = True
 
         self.assertTrue(author3_friend_request_to_author2)
@@ -141,9 +141,9 @@ class ProfilesTest(TestCase):
         author1 = self.create_author()
         author2 = self.create_author()
         author3 = self.create_author()
-        AuthorFriend.objects.create(author=author1, friend=author2)
-        AuthorFriend.objects.create(author=author2, friend=author1)
-        AuthorFriend.objects.create(author=author3, friend=author2)
+        AuthorFriend.objects.create(author=author1.url, friend=author2.url)
+        AuthorFriend.objects.create(author=author2.url, friend=author1.url)
+        AuthorFriend.objects.create(author=author3.url, friend=author2.url)
 
         self.assertTrue(isFriend(author1, author2))
         self.assertFalse(isFriend(author2, author3))
