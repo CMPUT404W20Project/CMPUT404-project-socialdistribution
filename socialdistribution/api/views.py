@@ -858,7 +858,7 @@ def github_posts(request):
             response_body = {
                 "query": "github_posts",
                 "success": False,
-                "message": "Can't retrieve the author's github activities",
+                "message": "Can't retrieve the author's github activities"
             }
             return JsonResponse(response_body, status=r.status_code)
 
@@ -879,7 +879,7 @@ def github_posts(request):
                 if type == 'PullRequestEvent':
                     content += payload['pull_request']['body']
                 elif type == 'PushEvent':
-                    for i in range(payload['size']):
+                    for i in range(len(payload['commits'])):
                         content += "["+ payload['commits'][i]['message'].replace('\n\n', ' ') +"]("+ payload['commits'][i]['url'] + ") \r\n "
                 elif type == 'PullRequestReviewCommentEvent':
                     content += payload['comment']['body']
@@ -888,7 +888,7 @@ def github_posts(request):
                 elif type == 'IssuesEvent':
                     content += "["+ payload['issue']['title'] +"]("+ payload['issue']['html_url'] + ")"
 
-                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/plain')
+                github_post = Post(author=author, title=title, description=git_id, content=content, published=published, contentType='text/markdown')
                 github_post.save()
 
         response_body = {
@@ -911,9 +911,14 @@ def who_am_i(request):
     response_body = {"query": "whoami", "success": True}
 
     if request.user.is_anonymous:
-        response_body["author"] = "Anonymous user (unauthenticated)"
+        response_body = "Anonymous user (unauthenticated)"
     else:
-        response_body["author"] = author_to_dict(request.user)
+        response_body = author_to_dict(request.user)
+        response_body["id"] = author_to_dict(request.user)["url"]
+
+        response_body["friends"] = [
+            author_to_dict(friend.friend) for friend in getFriendsOfAuthor(request.user)
+        ]
 
     return JsonResponse(response_body)
 

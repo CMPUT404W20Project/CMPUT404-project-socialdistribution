@@ -36,16 +36,15 @@ def index(request):
 @csrf_exempt
 @login_required
 def new_post(request):
-
     author = request.user
-    template = 'posts/posts_form.html'
+    template = 'vue/new_post.html'
     form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
     friendList = getFriendsOfAuthor(author)
 
     context = {
         'form': form,
         'author': author,
-        'friendList': friendList,
+        'friendList': friendList
     }
 
     if request.method == 'POST':
@@ -61,6 +60,30 @@ def new_post(request):
 
     return render(request, template, context)
 
+    # author = request.user
+    # template = 'posts/posts_form.html'
+    # form = PostForm(request.POST or None, request.FILES or None, initial={'author': author})
+    # friendList = getFriendsOfAuthor(author)
+
+    # context = {
+    #     'form': form,
+    #     'author': author,
+    #     'friendList': friendList,
+    # }
+
+    # if request.method == 'POST':
+    #     if form.is_valid():
+    #         new_content = form.save(commit=False)
+    #         cont_type = form.cleaned_data['contentType']
+    #         if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
+    #             img = form.cleaned_data['image_file']
+    #             new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
+    #         new_content.save()
+    #         url = reverse('index')
+    #         return HttpResponseRedirect(url)
+
+    # return render(request, template, context)
+
 
 def current_visible_posts(request):
     return HttpResponse("Only these posts are visible to you: ")
@@ -73,13 +96,17 @@ def author_posts(request, author_id):
 @login_required
 def view_profile(request):
     author = request.user
-    template = 'profiles/profiles_view.html'
-    # form = ProfileForm(instance=author)
-    context = {
-        'author': author
-    }
 
-    return render(request, template, context)
+    return view_author_profile(request, author.id)
+
+    # author = request.user
+    # template = 'profiles/profiles_view.html'
+    # # form = ProfileForm(instance=author)
+    # context = {
+    #     'author': author
+    # }
+
+    # return render(request, template, context)
 
 
 @login_required
@@ -103,23 +130,46 @@ def edit_profile(request):
     return render(request, template, context)
 
 def view_author_profile(request, author_id):
-    #The user who login in/use the application
-    # TODO: add cookie or token to store the user
-    user_author = request.user
-
     author = Author.objects.get(id=author_id)
-    template = 'profiles/profiles_view.html'
-    # form = ProfileForm(instance=author)
-    status = True
 
-    if author == user_author:
-        status = False
+    form = ProfileForm(request.POST or None, request.FILES or None, instance=author)
+
+    editable = (author.id == request.user.id)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            form.save()
+            url = reverse('viewprofile')
+            return HttpResponseRedirect(url)
+
+    template = 'vue/profile.html'
+
     context = {
-        'user_author': user_author,
-        'author': author,
-        'status': status,
+        'user_id': author.id,
+        'form': form,
+        'editable': editable
     }
+
     return render(request, template, context)
+
+    # old view here
+    # #The user who login in/use the application
+    # # TODO: add cookie or token to store the user
+    # user_author = request.user
+
+    # author = Author.objects.get(id=author_id)
+    # template = 'profiles/profiles_view.html'
+    # # form = ProfileForm(instance=author)
+    # status = True
+
+    # if author == user_author:
+    #     status = False
+    # context = {
+    #     'user_author': user_author,
+    #     'author': author,
+    #     'status': status,
+    # }
+    # return render(request, template, context)
 
 
 def register(request):

@@ -15,6 +15,13 @@ from api.utils import author_can_see_post
 
 @login_required
 def index(request):
+    template = 'vue/stream.html'
+    
+    return render(request, template, {})
+
+
+@login_required
+def old_stream(request):
 
     author = request.user
     template = 'posts/posts_base.html'
@@ -50,33 +57,64 @@ def view_post(request, post_id):
     author = request.user
     post = Post.objects.get(pk=post_id)
 
+    form = PostForm(request.POST or None, request.FILES or None, instance=post)
+
+    default_content = post.content
+    if request.method == 'POST':
+        if form.is_valid():
+            new_content = form.save(commit=False)
+            cont_type = form.cleaned_data['contentType']
+            if(cont_type == "image/png;base64" or cont_type == "image/jpeg;base64"):
+                img = form.cleaned_data['image_file']
+                if(img != None):
+                    new_content.content = (base64.b64encode(img.file.read())).decode("utf-8")
+                else:
+                    new_content.content = default_content
+
+            new_content.save()
+            url = reverse('details', kwargs={'post_id': post.id})
+            return HttpResponseRedirect(url)
+
+    editable = (post.author.id == author.id)
+
     # Will need to clean this up later by making this a decorator
     if (not author_can_see_post(author, post)):
         return render(request, "403.html")
 
-    template = 'posts/posts_view.html'
-    comments = Comment.objects.filter(post=post).order_by('published')
+    template = 'vue/post.html'
 
-    if request.method == 'POST':
-        comment_form = CommentForm(request.POST or None)
-        if comment_form.is_valid():
-            content = request.POST.get('comment')
-            comment = Comment.objects.create(post=post, author=author,
-                                             comment=content)
-            comment.save()
-            return HttpResponseRedirect(request.path_info)
-        # What should we do if the form is invalid?
-    else:
-        comment_form = CommentForm()
-
+    # TODO: add friends functionality, like the old one had
     context = {
-        'author': author,
-        'post': post,
-        'comments': comments,
-        'comment_form': comment_form,
+        'post_id': post_id,
+        'form': form,
+        'editable': editable
     }
 
     return render(request, template, context)
+
+    # template = 'posts/posts_view.html'
+    # comments = Comment.objects.filter(post=post).order_by('published')
+
+    # if request.method == 'POST':
+    #     comment_form = CommentForm(request.POST or None)
+    #     if comment_form.is_valid():
+    #         content = request.POST.get('comment')
+    #         comment = Comment.objects.create(post=post, author=author,
+    #                                          comment=content)
+    #         comment.save()
+    #         return HttpResponseRedirect(request.path_info)
+    #     # What should we do if the form is invalid?
+    # else:
+    #     comment_form = CommentForm()
+
+    # context = {
+    #     'author': author,
+    #     'post': post,
+    #     'comments': comments,
+    #     'comment_form': comment_form,
+    # }
+
+    # return render(request, template, context)
 
 @login_required
 def edit_post(request, post_id):

@@ -24,13 +24,13 @@ def post_to_dict(post, request):
 
     post_dict = {
         "title": post.title,
-        "source": "POST HAS NO ATTRIBUTE SOURCE",
-        "origin": "POST HAS NO ATTRIBUTE ORIGIN",
+        "source": post.source,
+        "origin": post.origin,
         "description": post.description,
         "contentType": post.contentType,
         "content": post.content,
         "author": author_to_dict(post.author),
-        "categories": ["web", "tutorial"],
+        "categories": post.categories.split(",") if len(post.categories) > 0 else [],
         "count": paginator.count,
         "size": page_size,
         "comments": [comment_to_dict(comment) for comment in comments],
@@ -198,7 +198,8 @@ def is_valid_comment(comment_dict):
             return False
 
     # validate comment fields
-    for field, field_type in [("author", dict), ("comment", str), ("contentType", str), ("id", str)]:
+    # for field, field_type in [("author", dict), ("comment", str), ("contentType", str), ("id", str)]:
+    for field, field_type in [("author", dict), ("comment", str), ("contentType", str)]:
         if field not in comment_dict["comment"].keys() or not isinstance(
             comment_dict["comment"][field], field_type
         ):
@@ -212,10 +213,10 @@ def is_valid_comment(comment_dict):
         except:
             return False
 
-    # make sure that the comment doesn't already exist
-    comments = Comment.objects.filter(id=comment_dict["comment"]["id"])
-    if comments.count() > 0:
-        return False
+    # # make sure that the comment doesn't already exist
+    # comments = Comment.objects.filter(id=comment_dict["comment"]["id"])
+    # if comments.count() > 0:
+    #     return False
 
     return True
 
@@ -228,17 +229,22 @@ def insert_comment(post, comment_dict):
         comment_datetime = make_aware(
             dateutil.parser.isoparse(comment_dict["comment"]["published"])
         )
+        comment = Comment(
+            # id=comment_dict["comment"]["id"],
+            comment=comment_dict["comment"]["comment"],
+            published=comment_datetime,
+            post=post,
+            author=author,
+            contentType=comment_dict["comment"]["contentType"]
+        )
     else:
-        comment_datetime = datetime.utcnow()
-
-    comment = Comment(
-        id=comment_dict["comment"]["id"],
-        comment=comment_dict["comment"]["comment"],
-        published=comment_datetime,
-        post=post,
-        author=author,
-        contentType=comment_dict["comment"]["contentType"]
-    )
+        comment = Comment(
+            # id=comment_dict["comment"]["id"],
+            comment=comment_dict["comment"]["comment"],
+            post=post,
+            author=author,
+            contentType=comment_dict["comment"]["contentType"]
+        )
 
     comment.save()
 
